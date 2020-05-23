@@ -5,8 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.Session;
 
-import no.matchgeist.service.eventservices.EmptyEvent;
-import no.matchgeist.service.eventservices.FootballEvent;
+import no.matchgeist.service.event.EmptyEvent;
+import no.matchgeist.service.event.FootballEvent;
 
 public class EventBroker implements Runnable {
     

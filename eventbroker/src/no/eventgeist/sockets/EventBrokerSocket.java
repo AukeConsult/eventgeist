@@ -1,4 +1,4 @@
-package no.eventgeist.service;
+package no.eventgeist.sockets;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,6 +9,8 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+
+import no.eventgeist.service.EventBroker;
 
 @ServerEndpoint("/eventbroker")
 public class EventBrokerSocket {

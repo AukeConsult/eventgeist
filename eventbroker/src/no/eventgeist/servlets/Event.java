@@ -1,4 +1,4 @@
-package no.matchgeist.servlets;
+package no.eventgeist.servlets;
 
 import java.io.IOException;
 import javax.servlet.ServletException;

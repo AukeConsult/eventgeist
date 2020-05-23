@@ -1,4 +1,4 @@
-package no.matchgeist.service.eventservices;
+package no.matchgeist.service.event;
 
 import no.eventgeist.service.EventService;
 import no.eventgeist.service.UserSession;
