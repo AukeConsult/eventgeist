@@ -12,7 +12,7 @@ public class EventBroker implements Runnable {
     
     private static EventBroker instance;
 
-    private static Map<String, EventService> events = new ConcurrentHashMap<String, EventService>();
+    private static Map<String, EventServer> events = new ConcurrentHashMap<String, EventServer>();
     private static Map<String, UserSession> sessions = new ConcurrentHashMap<String, UserSession>();
     
     private EventBroker() {}
@@ -22,16 +22,15 @@ public class EventBroker implements Runnable {
     	if(!events.containsKey(eventid)) {
     		// check what type of event
     		if(eventtype.equals("football")) {
-        		events.put(eventid, new FootballEvent());
+        		events.put(eventid, new FootballEvent(eventid));
     		} else {
-    			events.put(eventid, new EmptyEvent());
+    			events.put(eventid, new EmptyEvent(eventid));
     		}
-    	
+    		events.get(eventid).init();
     	}
     	
-    	EventService event = events.get(eventid);
-    	
-    	UserSession usersession = new UserSession(session, event, userid, support, position);
+    	EventServer event = events.get(eventid);    	
+    	UserSession usersession = new UserSession(session, event, userid, support, position,0);
         event.addUser(usersession);
         sessions.put(session.getId(), usersession);
 
@@ -62,9 +61,11 @@ public class EventBroker implements Runnable {
                 Thread.sleep(10*1000);
                 System.out.println("do push size clients " + sessions.size() + " " + this.hashCode()); 
                 
-                for(EventService eventHandler:events.values()) {
+                for(EventServer eventHandler:events.values()) {
                 	
                 	System.out.println("push event");
+                	
+                	/*
                 	String response = eventHandler.readResult();
                 	
                 	for(UserSession session:eventHandler.getUsersessions().values()) {                		
@@ -78,6 +79,8 @@ public class EventBroker implements Runnable {
                             sessions.remove(session);
                         }
                 	}
+                	*/
+                	
                 }
                 
             } catch (Exception e) {
