@@ -13,17 +13,18 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TimeFrame {
 
+	private EventRunner eventrunner;
+	
 	private int delay;
 	public int getDelay() {return delay;}
 	
 	protected Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 	public List<UserSession> getUserSessions() {return new ArrayList<UserSession>(usersessions.values());}
 	
-	protected Queue<TimeSlot> calculated_slots = new ConcurrentLinkedQueue<TimeSlot>();
-	
-	public TimeFrame(int delay) {
+	public TimeFrame(EventRunner eventrunner, int delay) {
+		this.eventrunner=eventrunner;
 		this.delay=delay;
-	}
+	}	
 	
 	public void addUser(UserSession session) {
 		if(!usersessions.containsKey(session.getId())) {
@@ -32,8 +33,8 @@ public class TimeFrame {
 	}
 	
 	private ReentrantLock lock = new ReentrantLock(); 	
-	private TimeSlot resultslot;	
-	public void setResultslot(TimeSlot resultslot) {
+	private ResultSlot resultslot;	
+	public void setResultslot(ResultSlot resultslot) {
     	try {
         	lock.lock();
         	this.resultslot=resultslot;
@@ -41,17 +42,18 @@ public class TimeFrame {
         	lock.unlock();			
         }                	
 	}
-	public TimeSlot readResultslot() {
+	
+	public ResultSlot readResultslot() {
     	try {
         	lock.lock();
         	return resultslot;
         } finally {
         	if(resultslot!=null) {
-        		calculated_slots.add(resultslot);
+        		eventrunner.getCalculated_slots().add(resultslot);
         	}
         	resultslot=null;
         	lock.unlock();			
-        }                	
+        }             	
 	}
 	
 }

@@ -6,15 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TimeSlot {
+public class ResultSlot {
 
 	public int currentpos;
 	public long currenttime = System.currentTimeMillis();
-	public String result;
+	public boolean isresult=false;
+	public String resultString;
 	
 	public Map<String, Integer> hits = new HashMap<String, Integer>();	
 	public List<String> responses = new ArrayList<String>();	
-
-	public TimeSlot() {}
+	public ResultSlot() {}
+	
+	public Object resultObject;
 
 }

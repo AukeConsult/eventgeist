@@ -2,14 +2,14 @@ package no.test;
 
 import static org.junit.Assert.*;
 
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.eventgeist.service.Event;
+import no.eventgeist.service.EventRunner;
 import no.eventgeist.service.UserSession;
 import no.eventgeist.service.event.FootballEvent;
 
@@ -29,12 +29,12 @@ public class EventBrokerTest {
 	
 	final static Logger log = LoggerFactory.getLogger(EventBrokerTest.class);
 
-	Event event;
+	EventRunner event;
 	
     @Before
     public void start() {
-    	
     	event = new FootballEvent("test",5000);
+    	event.stopThreads();    	
     	for(int i=0;i<5;i++){
 			event.addUser(new UserSession(null, event, "leifx" + i, "team1", "", 0));
 		}
@@ -61,16 +61,19 @@ public class EventBrokerTest {
 
 		Random rnd = new Random();
 		
-		for(int i=0;i<5;i++) {
 			List<UserSession> usersessions = event.getUserSessions();
 			for(UserSession session:usersessions){
 				if(rnd.nextInt(3)==0) {
 					session.addResponse("#C");
 				}
-			}
+			}						
 			event.calculate();
-			System.out.println(event.getTimeSlots().get(event.getTimeSlots().size()-1).result);
-		}
+			Assert.assertTrue(event.getResultSlots().size()>0);
+			event.readResultslots();
+			Assert.assertTrue(event.getCalculated_slots().size()>0);
+			event.saveSlots();
+			
+			System.out.println(event.getResultSlots().get(event.getResultSlots().size()-1).resultString);
 		
 	}
 	
@@ -82,7 +85,7 @@ public class EventBrokerTest {
 		AtomicInteger cnt= new AtomicInteger(0);
 		AtomicBoolean closed = new AtomicBoolean(false);
 		
-		public userThread(Event event, String userid) {
+		public userThread(EventRunner event, String userid) {
 			usersession = new UserSession(null, event, userid, (rnd.nextInt()>0?"team1":"team2"), "", 0);
 			event.addUser(usersession);
 			new Thread(this).start();
@@ -91,22 +94,19 @@ public class EventBrokerTest {
 		@Override
 		public void run() {
 			
-			while(cnt.get()<10) {
+			while(cnt.get()<100) {
 				try {
-					
 					Thread.sleep(50 + rnd.nextInt(2000));
-					if(rnd.nextInt(4)==0) {
+					if(rnd.nextInt(3)==0) {
 						usersession.addResponse("#C0");
 						cnt.incrementAndGet();
 					}
 					if(rnd.nextInt(10)==0) {
 						usersession.addResponse("#C1");
 						cnt.incrementAndGet();
-					}					
-					
+					}										
 				} catch (InterruptedException e) {
-				}
-				
+				}				
 			}
 			closed.set(true);
 			
@@ -116,7 +116,6 @@ public class EventBrokerTest {
 
 	@Test
 	public void test_calculate_random() {
-
 		
 		System.out.println("calculate random");
 		AtomicBoolean closed = new AtomicBoolean(false);
@@ -131,19 +130,26 @@ public class EventBrokerTest {
 				int nextwait = calctime;
 				while(!closed.get()) {
 					try {
-						Thread.sleep(nextwait);
+						
+						if(nextwait>0) {
+							Thread.sleep(nextwait);
+						}
+
 						System.out.println("calculate " + String.valueOf(System.currentTimeMillis() - time));
 						Long startcalc = System.currentTimeMillis();
 						event.calculate();
 						nextwait = (int) (calctime - (System.currentTimeMillis() - startcalc)); 
-						System.out.println("calculate finish " + String.valueOf(System.currentTimeMillis() - startcalc));
 
 						//System.out.println("calculate finish");
-						if(event.getTimeSlots().size()>0){
-							System.out.println(event.getTimeSlots().get(event.getTimeSlots().size()-1).result);
+						if(event.getResultSlots().size()>0){
+							System.out.println(event.getResultSlots().get(event.getResultSlots().size()-1).resultString);
 						}						
+						System.out.println("calculate time " + String.valueOf(System.currentTimeMillis() - startcalc));
+
 						cnt++;	
 					} catch (InterruptedException e) {
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
 					}
 				}
 				
@@ -151,7 +157,7 @@ public class EventBrokerTest {
 		
 		List<userThread> workers = new ArrayList<userThread>();	
 		
-		for(int i=0;i<5000;i++) {
+		for(int i=0;i<10000;i++) {
 			workers.add(new userThread(event,"user"+i));
 		}
 		
@@ -171,9 +177,7 @@ public class EventBrokerTest {
 			} catch (InterruptedException e) {
 			}
 		}
-		
-		System.out.println("calculate random finish");
-		
+		System.out.println("calculate random finish");		
 		
 	}	
 }

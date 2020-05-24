@@ -1,86 +1,71 @@
 package no.eventgeist.service.event;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import no.eventgeist.service.Event;
-import no.eventgeist.service.TimeFrame;
-import no.eventgeist.service.TimeSlot;
+import no.eventgeist.service.EventRunner;
+import no.eventgeist.service.ResultSlot;
 import no.eventgeist.service.UserSession;
 
-public class FootballEvent extends Event {
+public class FootballEvent extends EventRunner {
 
 	public FootballEvent(String eventid, int timeslot_period) {
 		super(eventid,timeslot_period);
 	}
-
-	protected void executeResponse(UserSession user, TimeSlot slot) {
-		
+	
+	protected void executeResponse(UserSession user, ResultSlot slot) {
+				
 		List<String> responses = user.readResponses(); 
-		for(String response:responses) {
-			if (response.startsWith("#C")) {
-		    	if(!slot.hits.containsKey(user.getSupport())) {
-		    		slot.hits.put(user.getSupport(), 0);
-		    	}
-		    	slot.hits.put(user.getSupport(), slot.hits.get(user.getSupport()) + 1);
+		if(responses.size()>0) {
+
+			slot.isresult=true;
+			if(slot.resultObject==null) {
+				FootBallresult res = new FootBallresult();
+				res.pos=slot.currentpos;
+				res.eventid=getEventid();
+				slot.resultObject=res;
+			}
+			FootBallresult res = (FootBallresult)slot.resultObject;
+			if(user.getSupport().equals("team1")) {
+				res.team1 += responses.size();
+			} else if(user.getSupport().equals("team2")) {
+				res.team2 += responses.size();
+			}						
+			for(String response:responses) {
+				if(!res.hits.containsKey(user.getSupport())){
+					res.hits.put(user.getSupport(),new HashMap<String, Integer>());
+				}
+				Map<String,Integer> hitres = res.hits.get(user.getSupport());
+				if(!hitres.containsKey(response)) {
+					hitres.put(response, 0);
+				}
+				int cnt = hitres.get(response);
+				cnt += 1;
+				hitres.put(response,cnt);	
 			}
 			
-//			slot.responses.add("{" + 
-//					makeQ("usr") + ":" + makeQ(user.getUserid()) + 
-//					"," + makeQ("rsp") + ":" + makeQ(response) + 
-//					"," +  makeQ("sup") + ":" + makeQ(user.getSupport()) + 
-//					"}") ;
 		}
+			
 	}
 	
-	private String makeQ(String value) {
-		return "\"" + value + "\"";
-	}
 	
 	@Override
-	protected void executeResult(TimeSlot slot) {
+	protected void executeResult(ResultSlot slot) {
 		
-		String hits="";
-		slot.result="";
-		
-		if(slot.hits.size()>0) {
-			
-			hits= makeQ("thits") + ": ["; 
-			String list="";
-			for(String support:slot.hits.keySet()) {
-				list += (list.length()>0?",":"") + "{" + 
-						makeQ("sup") + ":" + makeQ(support) + "," +  
-						makeQ("cnt") + ":" + slot.hits.get(support).toString() + 
-						"}";
+		if(slot.resultObject!=null) {
+			FootBallresult res = (FootBallresult)slot.resultObject;
+			try {
+				slot.resultString = objectMapper.writeValueAsString(res);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}			
-			hits += list + "]";
 		}
-
-		String resp="";		
-		
-		/*
-		if(slot.responses.size()>0) {
-			resp=makeQ("hits") + ": [";
-			String list="";
-			for(String response:slot.responses) {
-				list += (list.length()>0?",":"") + response;
-			}
-			resp += list + "]";
-		}
-		*/
-		
-		if(resp.length()>0 || hits.length()>0) {			
-			slot.result = "{ " + 
-					makeQ("evt") + ":" + makeQ(getEventid()) + "," +
-					makeQ("pos") + ":" + String.valueOf(slot.currentpos) +
-					(hits.length()>0?","+hits:"") + 
-					(resp.length()>0?","+resp:"") + 
-					"}";
-		}		
 		slot.responses.clear();
 
 	}
 	
 	@Override
-	protected TimeSlot newTimeSlot() {return new TimeSlot();}	
+	protected ResultSlot newResultSlot() {return new ResultSlot();}	
 
 }

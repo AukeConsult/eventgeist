@@ -12,7 +12,7 @@ public class EventBroker implements Runnable {
     
     private static EventBroker instance;
 
-    private static Map<String, Event> events = new ConcurrentHashMap<String, Event>();
+    private static Map<String, EventRunner> events = new ConcurrentHashMap<String, EventRunner>();
     private static Map<String, UserSession> sessions = new ConcurrentHashMap<String, UserSession>();
     
     private static int report_period_default=5000;
@@ -34,7 +34,7 @@ public class EventBroker implements Runnable {
     		events.get(eventid).init();
     	}
     	
-    	Event event = events.get(eventid);    	
+    	EventRunner event = events.get(eventid);    	
     	UserSession usersession = new UserSession(session, event, userid, support, position,0);
         event.addUser(usersession);
         sessions.put(session.getId(), usersession);
@@ -66,7 +66,7 @@ public class EventBroker implements Runnable {
                 	Thread.sleep(1000);
 	                System.out.println("do push size clients " + sessions.size() + " " + this.hashCode()); 
 	                
-	                for(Event event:events.values()) {
+	                for(EventRunner event:events.values()) {
 	                	
 	                	System.out.println("push event");
 	                	
