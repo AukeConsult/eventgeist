@@ -1,4 +1,4 @@
-package no.eventgeist.service;
+package no.test;
 
 import static org.junit.Assert.*;
 
@@ -9,7 +9,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.matchgeist.service.event.FootballEvent;
+import no.eventgeist.service.Event;
+import no.eventgeist.service.UserSession;
+import no.eventgeist.service.event.FootballEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +29,18 @@ public class EventBrokerTest {
 	
 	final static Logger log = LoggerFactory.getLogger(EventBrokerTest.class);
 
-	EventServer event;
+	Event event;
 	
     @Before
     public void start() {
     	
-    	
-    	event = new FootballEvent("test");
-    	event.stopThreads();
-		
+    	event = new FootballEvent("test",5000);
     	for(int i=0;i<5;i++){
 			event.addUser(new UserSession(null, event, "leifx" + i, "team1", "", 0));
 		}
-		
     	for(int i=0;i<5;i++){
 			event.addUser(new UserSession(null, event, "leify" + i, "team2", "", 0));
 		}
-		
     	assertEquals(1, event.getTimeframes().size());
 		assertEquals(10, event.getTimeframes().get(0).getUserSessions().size());
     }
@@ -85,7 +82,7 @@ public class EventBrokerTest {
 		AtomicInteger cnt= new AtomicInteger(0);
 		AtomicBoolean closed = new AtomicBoolean(false);
 		
-		public userThread(EventServer event, String userid) {
+		public userThread(Event event, String userid) {
 			usersession = new UserSession(null, event, userid, (rnd.nextInt()>0?"team1":"team2"), "", 0);
 			event.addUser(usersession);
 			new Thread(this).start();

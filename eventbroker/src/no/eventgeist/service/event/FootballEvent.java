@@ -2,15 +2,15 @@ package no.eventgeist.service.event;
 
 import java.util.List;
 
-import no.eventgeist.service.EventServer;
-import no.eventgeist.service.EventTimeFrame;
+import no.eventgeist.service.Event;
+import no.eventgeist.service.TimeFrame;
 import no.eventgeist.service.TimeSlot;
 import no.eventgeist.service.UserSession;
 
-public class FootballEvent extends EventServer {
+public class FootballEvent extends Event {
 
-	public FootballEvent(String eventid) {
-		super(eventid);
+	public FootballEvent(String eventid, int timeslot_period) {
+		super(eventid,timeslot_period);
 	}
 
 	protected void executeResponse(UserSession user, TimeSlot slot) {
@@ -71,7 +71,7 @@ public class FootballEvent extends EventServer {
 		if(resp.length()>0 || hits.length()>0) {			
 			slot.result = "{ " + 
 					makeQ("evt") + ":" + makeQ(getEventid()) + "," +
-					makeQ("pos") + ":" + String.valueOf(slot.timepos) +
+					makeQ("pos") + ":" + String.valueOf(slot.currentpos) +
 					(hits.length()>0?","+hits:"") + 
 					(resp.length()>0?","+resp:"") + 
 					"}";
@@ -79,5 +79,8 @@ public class FootballEvent extends EventServer {
 		slot.responses.clear();
 
 	}
+	
+	@Override
+	protected TimeSlot newTimeSlot() {return new TimeSlot();}	
 
 }

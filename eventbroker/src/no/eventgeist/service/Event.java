@@ -1,6 +1,5 @@
 package no.eventgeist.service;
 
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -8,36 +7,40 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 //
 // Calculating each event
 // 
 
-public abstract class EventServer implements Runnable {
+public abstract class Event implements Runnable {
 	    
-	private int max_hits=0;
 	private String eventid;
-	private long starttime;
+	public String getEventid() {return eventid;}	
+
+	private long starttime;	
+	public long getStarttime() {return starttime;}
 	
-	private AtomicInteger timepos= new AtomicInteger();
+	private AtomicLong max_hits=new AtomicLong();
+	public long getCnt() {return max_hits.get();}	
+
+	private AtomicInteger currentpos= new AtomicInteger();
+	public int getCurrentpos() {return currentpos.get();}
+
 	private int timeslot_period=5000;
 
 	protected Map<Integer, TimeSlot> timeslots = new ConcurrentHashMap<Integer, TimeSlot>();
 	public List<TimeSlot> getTimeSlots() {return new ArrayList<TimeSlot>(timeslots.values());}
 	
-	protected Map<Integer, EventTimeFrame> timeframes = new ConcurrentHashMap<Integer, EventTimeFrame>();		
-	public List<EventTimeFrame> getTimeframes() {return new ArrayList<EventTimeFrame>(timeframes.values());}
+	protected Map<Integer, TimeFrame> timeframes = new ConcurrentHashMap<Integer, TimeFrame>();		
+	public List<TimeFrame> getTimeframes() {return new ArrayList<TimeFrame>(timeframes.values());}
 
-
-	public int getCnt() {return max_hits;}	
-	public String getEventid() {return eventid;}	
-	
-	public EventServer(String eventid) {
+	public Event(String eventid, int timeslot_period) {
 		this.eventid=eventid;
+		this.timeslot_period=timeslot_period;	
 	}
-	
+
 	// init and read up even informations
 	public void init() {
 		starttime=System.currentTimeMillis();
@@ -46,14 +49,14 @@ public abstract class EventServer implements Runnable {
 	
 	public void addUser(UserSession session) {
 		if(!timeframes.containsKey(session.getDelay())) {
-			timeframes.put(session.getDelay(), new EventTimeFrame(session.getDelay()));
+			timeframes.put(session.getDelay(), new TimeFrame(session.getDelay()));
 		}
 		timeframes.get(session.getDelay()).addUser(session);
 	}
 
 	public List<UserSession> getUserSessions() {
 		List<UserSession> ret = new ArrayList<UserSession>();
-		for(EventTimeFrame timeframe:getTimeframes()) {
+		for(TimeFrame timeframe:getTimeframes()) {
 			ret.addAll(timeframe.getUserSessions());
 		}
 		return ret;
@@ -66,13 +69,18 @@ public abstract class EventServer implements Runnable {
 
 	public void calculate() {
 		
-        for(EventTimeFrame timeframe:timeframes.values()) {
+		// hart pulze timer
+		currentpos.incrementAndGet();
+		// 
+        
+		for(TimeFrame timeframe:timeframes.values()) {
         	
-        	int slotpos = timepos.incrementAndGet() - timeframe.getDelay();
+        	int slotpos = currentpos.get() - timeframe.getDelay();
         	
-        	TimeSlot slot;
+        	TimeSlot slot=null;
         	if(!timeslots.containsKey(slotpos)) {
-        		slot = new TimeSlot(slotpos);
+        		slot = newTimeSlot();
+        		slot.currentpos = currentpos.get();
         	} else {
         		slot = timeslots.get(slotpos);
         	}        	
@@ -81,7 +89,7 @@ public abstract class EventServer implements Runnable {
         	}
         	executeResult(slot);
         	if(!slot.result.equals("")) {
-        		timeslots.put(slot.timepos, slot);
+        		timeslots.put(slot.currentpos, slot);
         		timeframe.setResultslot(slot);
         	}      
         	
@@ -104,8 +112,7 @@ public abstract class EventServer implements Runnable {
 	}
 	protected abstract void executeResponse(UserSession usersession,TimeSlot slot);
 	protected abstract void executeResult(TimeSlot slot);
-
-
+	protected abstract TimeSlot newTimeSlot();
 
 
 }

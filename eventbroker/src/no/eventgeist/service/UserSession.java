@@ -7,12 +7,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.websocket.Session;
 
-import no.eventgeist.service.EventServer;
+import no.eventgeist.service.Event;
 
 public class UserSession {
 	
 	private Session session;
-	private EventServer event;
+	private Event event;
 	
 	private String userid;
 	private String support;
@@ -50,7 +50,7 @@ public class UserSession {
 
 	}
 	
-	public UserSession(Session session, EventServer event, String userid, String support, String position, int delay) {
+	public UserSession(Session session, Event event, String userid, String support, String position, int delay) {
 		this.session=session;
 		this.event=event;
 		this.userid=userid;
@@ -60,7 +60,7 @@ public class UserSession {
 	}
 
 	public Session getSession() {return session;}
-	public EventServer getEvent() {return event;}
+	public Event getEvent() {return event;}
 	
 	public int getDelay() {return delay;}
 

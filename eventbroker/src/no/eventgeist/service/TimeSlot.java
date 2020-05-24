@@ -8,15 +8,13 @@ import java.util.Map;
 
 public class TimeSlot {
 
-	public int timepos;
+	public int currentpos;
+	public long currenttime = System.currentTimeMillis();
 	public String result;
 	
 	public Map<String, Integer> hits = new HashMap<String, Integer>();	
 	public List<String> responses = new ArrayList<String>();	
 
 	public TimeSlot() {}
-	public TimeSlot(int timepos) {
-		this.timepos=timepos;
-	}
 
 }

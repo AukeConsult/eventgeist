@@ -12,8 +12,10 @@ public class EventBroker implements Runnable {
     
     private static EventBroker instance;
 
-    private static Map<String, EventServer> events = new ConcurrentHashMap<String, EventServer>();
+    private static Map<String, Event> events = new ConcurrentHashMap<String, Event>();
     private static Map<String, UserSession> sessions = new ConcurrentHashMap<String, UserSession>();
+    
+    private static int report_period_default=5000;
     
     private EventBroker() {}
     
@@ -22,14 +24,17 @@ public class EventBroker implements Runnable {
     	if(!events.containsKey(eventid)) {
     		// check what type of event
     		if(eventtype.equals("football")) {
-        		events.put(eventid, new FootballEvent(eventid));
+        		events.put(eventid, new FootballEvent(eventid, report_period_default));
     		} else {
-    			events.put(eventid, new EmptyEvent(eventid));
+    			events.put(eventid, new EmptyEvent(eventid, report_period_default));
     		}
+    		// read event info
+
+    		// initialize and start event
     		events.get(eventid).init();
     	}
     	
-    	EventServer event = events.get(eventid);    	
+    	Event event = events.get(eventid);    	
     	UserSession usersession = new UserSession(session, event, userid, support, position,0);
         event.addUser(usersession);
         sessions.put(session.getId(), usersession);
@@ -56,36 +61,38 @@ public class EventBroker implements Runnable {
         
         while (true) {
             
-        	try {
-            	
-                Thread.sleep(10*1000);
-                System.out.println("do push size clients " + sessions.size() + " " + this.hashCode()); 
-                
-                for(EventServer eventHandler:events.values()) {
-                	
-                	System.out.println("push event");
-                	
-                	/*
-                	String response = eventHandler.readResult();
-                	
-                	for(UserSession session:eventHandler.getUsersessions().values()) {                		
+                try {
 
-                		System.out.println("push " + session.getSession().getId()); 
-                        if (session.getSession().isOpen()) {
-                        	Date d = new Date(System.currentTimeMillis());
-                        	session.getSession().getBasicRemote().sendText(response);
-                        } else {
-                        	System.out.println("close " + session.getSession().getId()); 
-                            sessions.remove(session);
-                        }
-                	}
-                	*/
-                	
-                }
+                	Thread.sleep(1000);
+	                System.out.println("do push size clients " + sessions.size() + " " + this.hashCode()); 
+	                
+	                for(Event event:events.values()) {
+	                	
+	                	System.out.println("push event");
+	                	
+	                	/*
+	                	String response = eventHandler.readResult();
+	                	
+	                	for(UserSession session:event.getUsersessions().values()) {                		
+
+	                		System.out.println("push " + session.getSession().getId()); 
+	                        if (session.getSession().isOpen()) {
+	                        	Date d = new Date(System.currentTimeMillis());
+	                        	session.getSession().getBasicRemote().sendText(response);
+	                        } else {
+	                        	System.out.println("close " + session.getSession().getId()); 
+	                            sessions.remove(session);
+	                        }
+	                	}
+	                	*/
+	                	
+	                }
+				
                 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                } catch (InterruptedException e) {
+                } catch (Exception e) {
+					e.printStackTrace();
+				}
         	
         }
         

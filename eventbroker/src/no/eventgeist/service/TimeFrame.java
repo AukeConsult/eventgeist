@@ -8,7 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class EventTimeFrame {
+
+// all user session within the same time frame
+
+public class TimeFrame {
 
 	private int delay;
 	public int getDelay() {return delay;}
@@ -18,7 +21,7 @@ public class EventTimeFrame {
 	
 	protected Queue<TimeSlot> calculated_slots = new ConcurrentLinkedQueue<TimeSlot>();
 	
-	public EventTimeFrame(int delay) {
+	public TimeFrame(int delay) {
 		this.delay=delay;
 	}
 	
@@ -49,6 +52,6 @@ public class EventTimeFrame {
         	resultslot=null;
         	lock.unlock();			
         }                	
-	}	
+	}
 	
 }

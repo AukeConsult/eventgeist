@@ -1,14 +1,13 @@
 package no.eventgeist.service.event;
 
-import no.eventgeist.service.EventServer;
-import no.eventgeist.service.EventTimeFrame;
+import no.eventgeist.service.Event;
 import no.eventgeist.service.TimeSlot;
 import no.eventgeist.service.UserSession;
 
-public class EmptyEvent extends EventServer {
+public class EmptyEvent extends Event {
 
-	public EmptyEvent(String eventid) {
-		super(eventid);
+	public EmptyEvent(String eventid, int timeslot_period) {
+		super(eventid, timeslot_period);
 	}
 
 	protected void executeResponse(UserSession user, TimeSlot slot) {
@@ -27,5 +26,8 @@ public class EmptyEvent extends EventServer {
 			slot.result += "#RR:" + resp;
 		}
 	}
+
+	@Override
+	protected TimeSlot newTimeSlot() {return new TimeSlot();}
 
 }
