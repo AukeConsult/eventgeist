@@ -14,7 +14,7 @@ public class EventTimeFrame {
 	public int getDelay() {return delay;}
 	
 	protected Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
-	public List<UserSession> getUsersessions() {return new ArrayList<UserSession>(usersessions.values());}
+	public List<UserSession> getUserSessions() {return new ArrayList<UserSession>(usersessions.values());}
 	
 	protected Queue<TimeSlot> calculated_slots = new ConcurrentLinkedQueue<TimeSlot>();
 	

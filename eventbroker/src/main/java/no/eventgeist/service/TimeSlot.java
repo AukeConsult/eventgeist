@@ -8,10 +8,9 @@ import java.util.Map;
 
 public class TimeSlot {
 
-	protected int timepos;
-	private String result;
+	public int timepos;
+	public String result;
 	
-	public String resultWork="";
 	public Map<String, Integer> hits = new HashMap<String, Integer>();	
 	public List<String> responses = new ArrayList<String>();	
 
@@ -19,7 +18,5 @@ public class TimeSlot {
 	public TimeSlot(int timepos) {
 		this.timepos=timepos;
 	}
-	public String getResult() {return result;}
-	public void setResult(String result) {this.result = result;}
 
 }

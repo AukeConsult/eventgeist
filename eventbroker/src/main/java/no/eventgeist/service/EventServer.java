@@ -25,6 +25,7 @@ public abstract class EventServer implements Runnable {
 	private int timeslot_period=5000;
 
 	protected Map<Integer, TimeSlot> timeslots = new ConcurrentHashMap<Integer, TimeSlot>();
+	public List<TimeSlot> getTimeSlots() {return new ArrayList<TimeSlot>(timeslots.values());}
 	
 	protected Map<Integer, EventTimeFrame> timeframes = new ConcurrentHashMap<Integer, EventTimeFrame>();		
 	public List<EventTimeFrame> getTimeframes() {return new ArrayList<EventTimeFrame>(timeframes.values());}
@@ -46,14 +47,13 @@ public abstract class EventServer implements Runnable {
 		if(!timeframes.containsKey(session.getDelay())) {
 			timeframes.put(session.getDelay(), new EventTimeFrame(session.getDelay()));
 		}
-		EventTimeFrame t = timeframes.get(session.getDelay());		
 		timeframes.get(session.getDelay()).addUser(session);
 	}
 
 	public List<UserSession> getUserSessions() {
 		List<UserSession> ret = new ArrayList<UserSession>();
 		for(EventTimeFrame timeframe:getTimeframes()) {
-			ret.addAll(timeframe.getUsersessions());
+			ret.addAll(timeframe.getUserSessions());
 		}
 		return ret;
 	}
@@ -75,14 +75,11 @@ public abstract class EventServer implements Runnable {
         	} else {
         		slot = timeslots.get(slotpos);
         	}        	
-        	
-        	for(UserSession user:timeframe.getUsersessions()) {
+        	for(UserSession user:timeframe.getUserSessions()) {
         		executeResponse(user, slot);
         	}
-        	
         	executeResult(slot);
-        	
-        	if(!slot.resultWork.equals("")) {
+        	if(!slot.result.equals("")) {
         		timeslots.put(slot.timepos, slot);
         		timeframe.setResultslot(slot);
         	}      
@@ -106,6 +103,8 @@ public abstract class EventServer implements Runnable {
 	}
 	protected abstract void executeResponse(UserSession usersession,TimeSlot slot);
 	protected abstract void executeResult(TimeSlot slot);
+
+
 
 
 }

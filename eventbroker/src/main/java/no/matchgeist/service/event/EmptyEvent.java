@@ -13,7 +13,7 @@ public class EmptyEvent extends EventServer {
 
 	protected void executeResponse(UserSession user, TimeSlot slot) {
 		for(String response:user.readResponses()) {
-	    	slot.resultWork += response + ";";
+	    	slot.result += response + ";";
 		}
 	}
 
@@ -24,7 +24,7 @@ public class EmptyEvent extends EventServer {
 			resp += response;
 		}
 		if(!resp.equals("")) {
-			slot.resultWork += "#RR:" + resp;
+			slot.result += "#RR:" + resp;
 		}
 	}
 
