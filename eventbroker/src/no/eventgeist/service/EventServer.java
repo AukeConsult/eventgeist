@@ -40,7 +40,8 @@ public abstract class EventServer implements Runnable {
 	
 	// init and read up even informations
 	public void init() {
-		starttime=System.currentTimeMillis();		
+		starttime=System.currentTimeMillis();
+		new Thread(this).start();
 	}
 	
 	public void addUser(UserSession session) {

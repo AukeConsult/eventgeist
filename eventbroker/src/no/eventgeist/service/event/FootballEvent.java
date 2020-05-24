@@ -1,4 +1,4 @@
-package no.matchgeist.service.event;
+package no.eventgeist.service.event;
 
 import java.util.List;
 
