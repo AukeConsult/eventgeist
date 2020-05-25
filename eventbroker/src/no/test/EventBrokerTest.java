@@ -33,7 +33,10 @@ public class EventBrokerTest {
 	
     @Before
     public void start() {
+    	
     	event = new FootballEvent("test",5000);
+    	event.init();
+    	
     	event.stopThreads();    	
     	for(int i=0;i<5;i++){
 			event.addUser(new UserSession(null, event, "leifx" + i, "team1", "", 0));
@@ -119,6 +122,8 @@ public class EventBrokerTest {
 		
 		System.out.println("calculate random");
 		AtomicBoolean closed = new AtomicBoolean(false);
+		
+		int num_usersessions=100;
 
 		final int calctime = 1000;
 		Long time = System.currentTimeMillis();
@@ -137,7 +142,11 @@ public class EventBrokerTest {
 
 						System.out.println("calculate " + String.valueOf(System.currentTimeMillis() - time));
 						Long startcalc = System.currentTimeMillis();
+						
 						event.calculate();
+						event.readResultslots();
+						event.saveSlots();
+						
 						nextwait = (int) (calctime - (System.currentTimeMillis() - startcalc)); 
 
 						//System.out.println("calculate finish");
@@ -155,15 +164,20 @@ public class EventBrokerTest {
 				
 			}}).start();
 		
+			
 		List<userThread> workers = new ArrayList<userThread>();	
 		
-		for(int i=0;i<10000;i++) {
+		for(int i=0;i<num_usersessions;i++) {
 			workers.add(new userThread(event,"user"+i));
 		}
 		
 		while(!closed.get()) {
 			try {
 				Thread.sleep(2000);
+				
+				event.persist();
+				event.saveSlots();
+
 				int cnt=0;
 				for(userThread worker:workers) {
 					if(!worker.closed.get()) {

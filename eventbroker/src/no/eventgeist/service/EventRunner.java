@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import no.eventgeist.persistdom.EventStatus;
+
 
 //
 // Calculating each event
@@ -31,13 +33,14 @@ public abstract class EventRunner  {
 	private long starttime;	
 	public long getStarttime() {return starttime;}
 	
-	private AtomicLong max_hits=new AtomicLong();
-	public long getCnt() {return max_hits.get();}	
+	private AtomicLong hits=new AtomicLong();
+	public long getHits() {return hits.get();}	
 
 	private AtomicInteger currentpos= new AtomicInteger();
 	public int getCurrentpos() {return currentpos.get();}
 
 	private int timeslot_period=5000;
+	public int getTimeslot_period() {return timeslot_period;}
 
 	protected Map<Integer, ResultSlot> resultslots = new ConcurrentHashMap<Integer, ResultSlot>();
 	public List<ResultSlot> getResultSlots() {return new ArrayList<ResultSlot>(resultslots.values());}
@@ -50,6 +53,39 @@ public abstract class EventRunner  {
 	
 	protected ObjectMapper objectMapper = new ObjectMapper();
 
+	protected String persistDir;
+	protected String persistDirPos;
+	
+	public void hit() {
+		hits.incrementAndGet();
+	}
+	
+	public void persist() {
+
+		try {
+
+			EventStatus status = new EventStatus();
+			status.setEventid(eventid);
+			status.setCurrentpos(currentpos.get());
+			status.setStarttime(starttime);
+			status.setTimeslot_period(timeslot_period);
+			status.setTimeframes(timeframes.size());
+			status.setHits(hits.get());
+			
+			int cnt=0;
+			for(TimeFrame timeframe:getTimeframes()) {
+				cnt+=timeframe.getUserSessions().size();
+			}
+
+			status.setUsersessions(cnt);
+			objectMapper.writeValue(new File(persistDir + "/status.json"), status);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public EventRunner(String eventid, int timeslot_period) {
 		this.eventid=eventid;
 		this.timeslot_period=timeslot_period;	
@@ -60,11 +96,46 @@ public abstract class EventRunner  {
 		
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);		
 		starttime=System.currentTimeMillis();
+
+		persistDir = EventBroker.reportDir + eventid;
+		new File(persistDir).mkdir();
+		persistDirPos=persistDir + "/pos";
+		new File(persistDirPos).mkdir();
 		
+		// persist status
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-						
+				// persist status
+		        while (!stopthread.get()) {
+		        		persist();
+		        		try {
+							Thread.sleep(1000*10);
+						} catch (InterruptedException e) {
+						}
+		        }
+			}
+		}).start();
+
+		// save slots
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// persist status
+		        while (!stopthread.get()) {
+		        		saveSlots();
+		        		try {
+							Thread.sleep(1000*10);
+						} catch (InterruptedException e) {
+						}
+		        }
+			}
+		}).start();
+		
+		// Make hart beat and calculate incoming responses pr. timeslot
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
 				// calculating results
 		        while (!stopthread.get()) {
 		        	try {
@@ -76,6 +147,8 @@ public abstract class EventRunner  {
 		        }
 			}
 		}).start();
+
+	
 	}
 	
 	public void addUser(UserSession session) {
@@ -138,16 +211,13 @@ public abstract class EventRunner  {
 	
 	public void saveSlots() {		
 		
-		String directory=System.getProperty("user.dir") + "/test/slots";
-		File f = new File(directory);
-		f.mkdir();
-		
 		if(calculated_slots.size()>0) {
+			
 			while(calculated_slots.peek()!=null) {				
 				try {
 					ResultSlot slot = calculated_slots.poll();
 					if(slot!=null) {
-						objectMapper.writeValue(new File(directory + "/" + eventid + "-" + String.valueOf(slot.currentpos) + ".json"), slot);
+						objectMapper.writeValue(new File(persistDirPos + "/pos-" + String.valueOf(slot.currentpos) + ".json"), slot);
 					}
 				} catch (JsonGenerationException e) {
 					e.printStackTrace();
@@ -157,6 +227,7 @@ public abstract class EventRunner  {
 					e.printStackTrace();
 				}
 			}
+			
 		}
 	}	
 			

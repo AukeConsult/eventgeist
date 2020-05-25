@@ -1,4 +1,4 @@
-package no.eventgeist.service.event;
+package no.eventgeist.persistdom;
 
 import java.util.HashMap;
 import java.util.Map;

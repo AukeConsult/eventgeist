@@ -14,8 +14,9 @@ public class EventBroker implements Runnable {
 
     private static Map<String, EventRunner> events = new ConcurrentHashMap<String, EventRunner>();
     private static Map<String, UserSession> sessions = new ConcurrentHashMap<String, UserSession>();
-    
     private static int report_period_default=5000;
+    
+    public static String reportDir=""; 
     
     private EventBroker() {}
     
@@ -49,9 +50,10 @@ public class EventBroker implements Runnable {
     
     public static void initialize() {
     	if (instance == null) {
-        	System.out.println("initpush");
+    		// read parameters
+    		reportDir = System.getProperty("user.dir") + "/test/events/";
+    		
             instance = new EventBroker();
-        	System.out.println("initpush " + instance.hashCode());
             new Thread(instance).start();
         }
     }

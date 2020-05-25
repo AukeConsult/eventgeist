@@ -25,29 +25,19 @@ public class UserSession {
     public String getPosition() {return position;}
 
 	private List<String> responses = Collections.synchronizedList(new ArrayList<String>());
-
-	private ReentrantLock lock = new ReentrantLock(); 	
 	
+	public int getNumResponses() {return responses.size();}
+	
+	private ReentrantLock lock = new ReentrantLock();	
 	public void addResponse(String response) {
-		//try {
-		//	lock.lock();
-			responses.add(response);
-		//} finally {
-		//	lock.unlock();
-		//}
+		event.hit();
+		responses.add(response);
 	}
 	
     public List<String> readResponses() {
-
-    	//try {
-		//	lock.lock();
-	    	List<String> ret_rep = new ArrayList<String>(responses);
-	    	responses.clear();
-			return ret_rep;
-		//} finally {
-		//	lock.unlock();
-		//}
-
+	    List<String> ret_rep = new ArrayList<String>(responses);
+	    responses.clear();
+		return ret_rep;
 	}
 	
 	public UserSession(Session session, EventRunner event, String userid, String support, String position, int delay) {
@@ -61,10 +51,8 @@ public class UserSession {
 
 	public Session getSession() {return session;}
 	public EventRunner getEvent() {return event;}
-	
-	public int getDelay() {return delay;}
 
-	
+	public int getDelay() {return delay;}
 	public String getId() {
 		if(session!=null) {
 			return session.getId();

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import no.eventgeist.persistdom.FootBallresult;
 import no.eventgeist.service.EventRunner;
 import no.eventgeist.service.ResultSlot;
 import no.eventgeist.service.UserSession;

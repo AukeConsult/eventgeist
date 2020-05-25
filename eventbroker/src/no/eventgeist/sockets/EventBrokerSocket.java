@@ -19,10 +19,9 @@ public class EventBrokerSocket {
     public void onOpen(Session session) {
         
     	System.out.println("open " + session.getId());     
-        
     	Map<String, List<String>> params = session.getRequestParameterMap();
 
-        EventBroker.initialize();
+    	EventBroker.initialize();
 		EventBroker.addSession(
 						session,
 						params.get("eventtype") != null?params.get("eventtype").get(0):"standard",
@@ -31,6 +30,7 @@ public class EventBrokerSocket {
 						params.get("support") != null?params.get("support").get(0):"",
 						params.get("position") != null?params.get("position").get(0):""
 					);    
+    
     }
     
     @OnClose
