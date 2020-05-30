@@ -1,4 +1,4 @@
-package no.eventgeist.service;
+package no.auke.events.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.websocket.Session;
 
-import no.eventgeist.service.EventRunner;
+import no.auke.events.service.EventRunner;
 
 public class UserSession {
 	

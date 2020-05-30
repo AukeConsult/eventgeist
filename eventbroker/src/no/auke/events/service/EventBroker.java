@@ -1,12 +1,12 @@
-package no.eventgeist.service;
+package no.auke.events.service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.Session;
 
-import no.eventgeist.service.event.EmptyEvent;
-import no.eventgeist.service.event.FootballEvent;
+import no.auke.events.service.event.EmptyEvent;
+import no.auke.events.service.event.FootballEvent;
 
 public class EventBroker implements Runnable {
     
@@ -49,13 +49,16 @@ public class EventBroker implements Runnable {
     }
     
     public static void initialize() {
+    	
     	if (instance == null) {
-    		// read parameters
-    		reportDir = System.getProperty("user.dir") + "/test/events/";
     		
+    		// read parameters
+    		reportDir = System.getProperty("user.dir") + "/test/events/";    		
             instance = new EventBroker();
             new Thread(instance).start();
-        }
+        
+    	}
+    
     }
     
     @Override
@@ -71,25 +74,27 @@ public class EventBroker implements Runnable {
 	                for(EventRunner event:events.values()) {
 	                	
 	                	System.out.println("push event");
-	                	
-	                	/*
-	                	String response = eventHandler.readResult();
-	                	
-	                	for(UserSession session:event.getUsersessions().values()) {                		
+	                	for(TimeFrame frame:event.getTimeframes()) {
+	                		
+		                	String response = frame.readResults();
+		                	if(response!=null) {
+		                		
+			                	for(UserSession session:frame.getUserSessions()) {                		
 
-	                		System.out.println("push " + session.getSession().getId()); 
-	                        if (session.getSession().isOpen()) {
-	                        	Date d = new Date(System.currentTimeMillis());
-	                        	session.getSession().getBasicRemote().sendText(response);
-	                        } else {
-	                        	System.out.println("close " + session.getSession().getId()); 
-	                            sessions.remove(session);
-	                        }
-	                	}
-	                	*/
-	                	
-	                }
-				
+			                		System.out.println("push " + session.getSession().getId()); 
+			                		
+			                        if (session.getSession().isOpen()) {
+			                        	session.getSession().getBasicRemote().sendText(response);
+			                        } else {
+			                        	//TODO add logging
+			                        	System.out.println("close " + session.getSession().getId()); 
+			                        	frame.removeSession(session);	
+			                            sessions.remove(session);
+			                        }
+			                	}
+		                	}	                		
+	                	}	                	
+	                }				
                 
                 } catch (InterruptedException e) {
                 } catch (Exception e) {

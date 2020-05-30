@@ -1,5 +1,5 @@
 // result for each timeslot of event
-package no.eventgeist.service;
+package no.auke.events.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;

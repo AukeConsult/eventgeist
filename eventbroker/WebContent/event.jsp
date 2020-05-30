@@ -73,7 +73,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>hello</title>
 </head>
-<body onload="init('127.0.0.1:8080/eventbroker','football','test1','leif','stromsgodset')">
+<body onload="init('127.0.0.1:8080/eventbroker','football','test1','leif','team1')">
 	
 	<p>Hello everybody</p>	
 	<button onclick="sendmessage('hello')">click hello</button>

@@ -1,7 +1,4 @@
-package no.eventgeist.persistdom;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+package no.auke.events.persistdom;
 
 public class EventStatus {
 

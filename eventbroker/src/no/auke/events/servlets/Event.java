@@ -1,4 +1,4 @@
-package no.eventgeist.servlets;
+package no.auke.events.servlets;
 
 import java.io.IOException;
 import javax.servlet.ServletException;

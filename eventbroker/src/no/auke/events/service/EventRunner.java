@@ -1,4 +1,4 @@
-package no.eventgeist.service;
+package no.auke.events.service;
 
 import java.util.List;
 import java.io.File;
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import no.eventgeist.persistdom.EventStatus;
+import no.auke.events.persistdom.EventStatus;
 
 
 //
@@ -201,13 +201,15 @@ public abstract class EventRunner  {
 
 	}
 	
+	/*
 	public List<ResultSlot> readResultslots() {
 		List<ResultSlot> ret = new ArrayList<ResultSlot>();
 		for(TimeFrame timeframe:timeframes.values()) {
 			ret.add(timeframe.readResultslot());
         }
 		return ret; 
-	}	
+	}
+	*/	
 	
 	public void saveSlots() {		
 		
@@ -234,6 +236,5 @@ public abstract class EventRunner  {
 	protected abstract void executeResponse(UserSession usersession,ResultSlot slot);
 	protected abstract void executeResult(ResultSlot slot);
 	protected abstract ResultSlot newResultSlot();
-	//protected abstract String getSlotContent(TimeSlot slot);
 
 }

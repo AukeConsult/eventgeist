@@ -1,4 +1,4 @@
-package no.eventgeist.persistdom;
+package no.auke.events.persistdom;
 
 import java.util.HashMap;
 import java.util.Map;

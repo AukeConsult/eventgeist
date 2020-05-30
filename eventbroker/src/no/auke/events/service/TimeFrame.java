@@ -1,16 +1,12 @@
-package no.eventgeist.service;
+package no.auke.events.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
-
 // all user session within the same time frame
-
 public class TimeFrame {
 
 	private EventRunner eventrunner;
@@ -43,17 +39,31 @@ public class TimeFrame {
         }                	
 	}
 	
-	public ResultSlot readResultslot() {
+	public String readResults() {
     	try {
         	lock.lock();
-        	return resultslot;
+        	if(resultslot!=null) {
+            	return resultslot.resultString;        		
+        	} else {
+        		return null;
+        	}
         } finally {
         	if(resultslot!=null) {
+        		resultslot.resultString=null;
         		eventrunner.getCalculated_slots().add(resultslot);
         	}
         	resultslot=null;
         	lock.unlock();			
         }             	
+	}
+
+	public void removeSession(UserSession session) {
+		try {
+			usersessions.remove(session.getId());		
+		} catch (Exception ex) {
+			//TODO add logging
+			System.out.println("session cant be removed " + session.getId());
+		}
 	}
 	
 }

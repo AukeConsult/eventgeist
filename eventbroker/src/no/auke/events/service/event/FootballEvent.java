@@ -1,13 +1,13 @@
-package no.eventgeist.service.event;
+package no.auke.events.service.event;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import no.eventgeist.persistdom.FootBallresult;
-import no.eventgeist.service.EventRunner;
-import no.eventgeist.service.ResultSlot;
-import no.eventgeist.service.UserSession;
+import no.auke.events.persistdom.FootBallresult;
+import no.auke.events.service.EventRunner;
+import no.auke.events.service.ResultSlot;
+import no.auke.events.service.UserSession;
 
 public class FootballEvent extends EventRunner {
 
