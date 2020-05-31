@@ -57,7 +57,7 @@ public class TimeFrame {
         }             	
 	}
 
-	public void removeSession(UserSession session) {
+	public void closeSession(UserSession session) {
 		try {
 			usersessions.remove(session.getId());		
 		} catch (Exception ex) {

@@ -54,18 +54,33 @@
 		client.connect();
 	}
 	
-	function sendmessage(message) {client.send("M#"+message);}
-	function sendclick(clickid) {client.send("K#"+clickid);}
+	function sendmessage(message) {client.send("M##"+message);}
+	function sendclick(clickid) {client.send("C##"+clickid);}
 	
 </script>
 
 <script type="text/javascript">	
     function prosessMessage(message) {
-        var pre = document.createElement("p"); 
-        pre.style.wordWrap = "break-word"; 
-        pre.innerHTML = '<span style = "color: blue;">RESPONSE: ' +
-        message+'</span>'
-        document.getElementById("output").appendChild(pre);
+    	
+    	if(message.substring(0,3)==="T##") {
+            
+    		var pre = document.createElement("p"); 
+            pre.style.wordWrap = "break-word"; 
+            pre.innerHTML = '<span style = "color: blue;">R-ALL: ' +
+            message+'</span>'
+            document.getElementById("output").appendChild(pre);
+    	
+    	} else if(message.substring(0,3)==="S##") {
+    	
+    		var pre = document.createElement("p"); 
+            pre.style.wordWrap = "break-word"; 
+            pre.innerHTML = '<span style = "color: blue;">R-SESSION: ' +
+            message+'</span>'
+            document.getElementById("output").appendChild(pre);
+    		
+    	}
+    		
+    
     }
 </script>
 
@@ -73,13 +88,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>hello</title>
 </head>
-<body onload="init('127.0.0.1:8080/eventbroker','football','test1','leif','team1')">
+<body onload="init('127.0.0.1:8080/broker','football','test1','leif','team1')">
 	
 	<p>Hello everybody</p>	
-	<button onclick="sendmessage('hello')">click hello</button>
+	<button onclick="sendmessage('hello old chap chap')">click hello</button>
 	<button onclick="sendclick('1')">click 1</button>
-	<button onclick="sendclick('2')">click 2</button>
-	
+	<button onclick="sendclick('2')">click 2</button>	
 	<div id = "output"></div>
 	
 </body>
