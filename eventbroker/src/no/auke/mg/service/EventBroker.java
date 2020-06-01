@@ -1,4 +1,4 @@
-package no.auke.events.service;
+package no.auke.mg.service;
 
 import java.io.File;
 import java.util.Map;
@@ -6,14 +6,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.Session;
 
-import no.auke.events.service.event.EmptyEvent;
-import no.auke.events.service.event.FootballEvent;
+import no.auke.mg.event.EventService;
+import no.auke.mg.event.TimeFrame;
+import no.auke.mg.event.UserSession;
+import no.auke.mg.event.basic.BasicEvent;
+import no.auke.mg.event.football.FootballEvent;
 
 public class EventBroker implements Runnable {
 
 	private static EventBroker instance;
 
-	private static Map<String, EventRunner> events = new ConcurrentHashMap<String, EventRunner>();
+	private static Map<String, EventService> events = new ConcurrentHashMap<String, EventService>();
 	private static Map<String, UserSession> sessions = new ConcurrentHashMap<String, UserSession>();
 	private static int report_period_default=5000;
 
@@ -28,7 +31,7 @@ public class EventBroker implements Runnable {
 			if(eventtype.trim().equals("football")) {
 				events.put(eventid, new FootballEvent(eventid.trim(), report_period_default));
 			} else {
-				events.put(eventid, new EmptyEvent(eventid.trim(), report_period_default));
+				events.put(eventid, new BasicEvent(eventid.trim(), report_period_default));
 			}
 			// read event info
 
@@ -36,7 +39,7 @@ public class EventBroker implements Runnable {
 			events.get(eventid.trim()).init();
 		}
 
-		EventRunner event = events.get(eventid.trim());
+		EventService event = events.get(eventid.trim());
 		UserSession usersession = new UserSession(session, event, userid.trim(), support.trim(), position.trim(),0);
 		event.addUser(usersession);
 		sessions.put(session.getId(), usersession);
@@ -82,7 +85,7 @@ public class EventBroker implements Runnable {
 				Thread.sleep(1000);
 				System.out.println("do push size clients " + sessions.size());
 
-				for(EventRunner event:events.values()) {
+				for(EventService event:events.values()) {
 
 					//System.out.println("push event");
 					for(TimeFrame frame:event.getTimeframes()) {

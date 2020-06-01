@@ -1,4 +1,4 @@
-package no.auke.events.sockets;
+package no.auke.mg.service;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,8 +10,6 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-
-import no.auke.events.service.EventBroker;
 
 @ServerEndpoint("/eventbroker")
 public class EventBrokerSocket {
@@ -26,7 +24,7 @@ public class EventBrokerSocket {
 		EventBroker.addSession(
 				session,
 				params.get("eventtype") != null?params.get("eventtype").get(0).trim():"standard",
-						params.get("event") != null?params.get("event").get(0).trim():"test",
+						params.get("event") != null?params.get("event").get(0).trim():"TestServlet",
 								params.get("user") != null?params.get("user").get(0).trim():session.getId(),
 										params.get("support") != null?params.get("support").get(0).trim():"",
 												params.get("position") != null?params.get("position").get(0).trim():""

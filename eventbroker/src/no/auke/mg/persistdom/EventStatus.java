@@ -1,4 +1,4 @@
-package no.auke.events.persistdom;
+package no.auke.mg.persistdom;
 
 public class EventStatus {
 

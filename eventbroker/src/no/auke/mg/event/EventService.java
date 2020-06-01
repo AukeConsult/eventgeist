@@ -1,4 +1,4 @@
-package no.auke.events.service;
+package no.auke.mg.event;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,14 +17,16 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import no.auke.events.persistdom.EventStatus;
+import no.auke.mg.event.dom.ResultSlot;
+import no.auke.mg.persistdom.EventStatus;
+import no.auke.mg.service.EventBroker;
 
 
 //
 // Calculating each event
 //
 
-public abstract class EventRunner  {
+public abstract class EventService  {
 
 	private String eventid;
 	public String getEventid() {return eventid;}
@@ -50,6 +52,14 @@ public abstract class EventRunner  {
 	protected Queue<ResultSlot> calculated_slots = new ConcurrentLinkedQueue<ResultSlot>();
 	public Queue<ResultSlot> getCalculated_slots() {return calculated_slots;}
 
+
+	private MessageService 	messageService;
+	public MessageService getMessageService() {return messageService;}
+
+	private NoteService 	noteService;
+	public NoteService getNoteService() {return noteService;}
+
+
 	protected ObjectMapper objectMapper = new ObjectMapper();
 
 	protected String persistDir;
@@ -68,7 +78,7 @@ public abstract class EventRunner  {
 				try {
 					ResultSlot slot = calculated_slots.poll();
 					if(slot!=null) {
-						objectMapper.writeValue(new File(persistDirPos + "/pos-" + String.valueOf(slot.currentpos) + ".json"), slot);
+						objectMapper.writeValue(new File(persistDirPos + "/slotpos-" + String.valueOf(slot.currentpos) + ".json"), slot);
 					}
 				} catch (JsonGenerationException e) {
 					e.printStackTrace();
@@ -108,7 +118,7 @@ public abstract class EventRunner  {
 
 	}
 
-	public EventRunner(String eventid, int timeslot_period) {
+	public EventService(String eventid, int timeslot_period) {
 		this.eventid=eventid;
 		this.timeslot_period=timeslot_period;
 	}
@@ -116,12 +126,16 @@ public abstract class EventRunner  {
 	// init and read up even informations
 	public void init() {
 
+		messageService = new MessageService(this);
+		noteService = new NoteService(this);
+
+
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 		starttime=System.currentTimeMillis();
 
 		persistDir = EventBroker.reportDir + eventid;
 		new File(persistDir).mkdir();
-		persistDirPos=persistDir + "/pos";
+		persistDirPos=persistDir + "/slotpos";
 		new File(persistDirPos).mkdir();
 
 		// persist status

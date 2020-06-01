@@ -1,14 +1,14 @@
-package no.auke.events.service.event;
+package no.auke.mg.event.basic;
 
 import java.util.List;
 
-import no.auke.events.service.EventRunner;
-import no.auke.events.service.ResultSlot;
-import no.auke.events.service.UserSession;
+import no.auke.mg.event.EventService;
+import no.auke.mg.event.UserSession;
+import no.auke.mg.event.dom.ResultSlot;
 
-public class EmptyEvent extends EventRunner {
+public class BasicEvent extends EventService {
 
-	public EmptyEvent(String eventid, int timeslot_period) {
+	public BasicEvent(String eventid, int timeslot_period) {
 		super(eventid, timeslot_period);
 	}
 
@@ -69,7 +69,7 @@ public class EmptyEvent extends EventRunner {
 		if(resp.length()>0 || hits.length()>0) {			
 			slot.resultString = "{" + System.getProperty("line.separator") +
 					makeQ("evt") + ":" + makeQ(getEventid()) + "," + System.getProperty("line.separator") +
-					makeQ("pos") + ":" + String.valueOf(slot.currentpos) +
+					makeQ("slotpos") + ":" + String.valueOf(slot.currentpos) +
 					(hits.length()>0?","+ System.getProperty("line.separator")+hits:"") + 
 					(resp.length()>0?","+ System.getProperty("line.separator")+resp:"") + 
 					System.getProperty("line.separator") + "}" ;

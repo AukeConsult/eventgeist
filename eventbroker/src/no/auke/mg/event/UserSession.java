@@ -1,4 +1,4 @@
-package no.auke.events.service;
+package no.auke.mg.event;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import javax.websocket.Session;
 public class UserSession {
 
 	private Session session;
-	private EventRunner event;
+	private EventService event;
 
 	private String userid;
 	private String support;
@@ -43,7 +43,7 @@ public class UserSession {
 		return ret_rep;
 	}
 
-	public UserSession(Session session, EventRunner event, String userid, String support, String position, int delay) {
+	public UserSession(Session session, EventService event, String userid, String support, String position, int delay) {
 		this.session=session;
 		this.event=event;
 		this.userid=userid;
@@ -85,7 +85,7 @@ public class UserSession {
 	}
 
 	public Session getSession() {return session;}
-	public EventRunner getEvent() {return event;}
+	public EventService getEvent() {return event;}
 
 	public int getDelay() {return delay;}
 	public String getId() {

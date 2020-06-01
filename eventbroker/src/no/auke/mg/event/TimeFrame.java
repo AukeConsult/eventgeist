@@ -1,4 +1,4 @@
-package no.auke.events.service;
+package no.auke.mg.event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import no.auke.mg.event.dom.ResultSlot;
+
 // all user session within the same time frame
 public class TimeFrame {
 
-	private EventRunner eventrunner;
+	private EventService eventrunner;
 	
 	private int delay;
 	public int getDelay() {return delay;}
@@ -17,7 +19,7 @@ public class TimeFrame {
 	protected Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 	public List<UserSession> getUserSessions() {return new ArrayList<UserSession>(usersessions.values());}
 	
-	public TimeFrame(EventRunner eventrunner, int delay) {
+	public TimeFrame(EventService eventrunner, int delay) {
 		this.eventrunner=eventrunner;
 		this.delay=delay;
 	}	

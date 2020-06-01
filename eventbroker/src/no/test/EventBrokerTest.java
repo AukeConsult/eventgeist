@@ -9,9 +9,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.auke.events.service.EventRunner;
-import no.auke.events.service.UserSession;
-import no.auke.events.service.event.FootballEvent;
+import no.auke.mg.service.EventRunner;
+import no.auke.mg.service.UserSession;
+import no.auke.mg.service.event.FootballEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(fullyQualifiedNames = "no.auke.events.service.*")
+@PrepareForTest(fullyQualifiedNames = "no.auke.mg.service.*")
 
 public class EventBrokerTest {
 	

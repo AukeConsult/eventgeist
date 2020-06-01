@@ -1,5 +1,5 @@
 // result for each timeslot of event
-package no.auke.events.service;
+package no.auke.mg.event.dom;
 
 import java.util.ArrayList;
 import java.util.HashMap;

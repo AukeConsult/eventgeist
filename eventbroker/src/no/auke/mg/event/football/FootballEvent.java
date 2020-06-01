@@ -1,15 +1,14 @@
-package no.auke.events.service.event;
+package no.auke.mg.event.football;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import no.auke.events.persistdom.FootBallresult;
-import no.auke.events.service.EventRunner;
-import no.auke.events.service.ResultSlot;
-import no.auke.events.service.UserSession;
+import no.auke.mg.event.EventService;
+import no.auke.mg.event.UserSession;
+import no.auke.mg.event.dom.ResultSlot;
 
-public class FootballEvent extends EventRunner {
+public class FootballEvent extends EventService {
 
 	public FootballEvent(String eventid, int timeslot_period) {
 		super(eventid,timeslot_period);
@@ -23,12 +22,14 @@ public class FootballEvent extends EventRunner {
 
 			slot.isresult=true;
 			if(slot.resultObject==null) {
-				FootBallresult res = new FootBallresult();
-				res.pos=slot.currentpos;
+
+				FootballFeedback res = new FootballFeedback();
+				res.slotpos=slot.currentpos;
 				res.eventid=getEventid();
 				slot.resultObject=res;
 			}
-			FootBallresult res = (FootBallresult)slot.resultObject;
+
+			FootballFeedback res = (FootballFeedback)slot.resultObject;
 			if(user.getSupport().equals("team1")) {
 				res.team1 += responses.size();
 			} else if(user.getSupport().equals("team2")) {
@@ -50,9 +51,12 @@ public class FootballEvent extends EventRunner {
 					hitres.put(response.substring(3),cnt);
 
 				} else if (response.startsWith("M##")) {
-					res.messages.add(response.substring(3));
+					this.getMessageService().addMessage(user.getId(), slot.currentpos, user.getDelay(), response.substring(3));
 				}
 			}
+			res.lastmsgid=this.getMessageService().lastMsgid(user.getDelay());
+			res.lastnoteid=this.getNoteService().lastNoteid(user.getDelay());
+
 		}
 	}
 
@@ -61,7 +65,7 @@ public class FootballEvent extends EventRunner {
 	protected void executeResult(ResultSlot slot) {
 
 		if(slot.resultObject!=null) {
-			FootBallresult res = (FootBallresult)slot.resultObject;
+			FootballFeedback res = (FootballFeedback)slot.resultObject;
 			try {
 				slot.resultString = objectMapper.writeValueAsString(res);
 			} catch (Exception e) {
