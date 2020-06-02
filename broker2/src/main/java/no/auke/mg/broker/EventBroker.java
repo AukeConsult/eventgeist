@@ -1,4 +1,4 @@
-package no.auke.mg.service;
+package no.auke.mg.broker;
 
 import java.io.File;
 import java.util.Map;
@@ -28,26 +28,32 @@ public class EventBroker implements Runnable {
 
 	public static void addSession(Session session, String eventtype, String eventid, String userid, String support, String position) {
 
-		if(!events.containsKey(eventid.trim())) {
-			// check what type of event
-			if(eventtype.trim().equals("football")) {
-				events.put(eventid, new FootballEvent(eventid.trim(), report_period_default));
-			} else {
-				events.put(eventid, new BasicEvent(eventid.trim(), report_period_default));
+		try {
+
+			if(!events.containsKey(eventid.trim())) {
+				// check what type of event
+				if(eventtype.trim().equals("football")) {
+					events.put(eventid, new FootballEvent(eventid.trim(), report_period_default));
+				} else {
+					events.put(eventid, new BasicEvent(eventid.trim(), report_period_default));
+				}
+				// read event info
+
+				// initialize and start event
+				events.get(eventid.trim()).init(EventBroker.reportDir);
 			}
-			// read event info
 
-			// initialize and start event
-			events.get(eventid.trim()).init(EventBroker.reportDir);
+			EventService event = events.get(eventid.trim());
+
+			UserSession usersession = new UserSession(session.getId(), event, userid.trim(), support.trim(), position.trim(),0);
+			event.addUser(usersession);
+
+			sessions.put(session.getId(), session);
+			usersessions.put(session.getId(), usersession);
+
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 		}
-
-		EventService event = events.get(eventid.trim());
-
-		UserSession usersession = new UserSession(session.getId(), event, userid.trim(), support.trim(), position.trim(),0);
-		event.addUser(usersession);
-
-		sessions.put(session.getId(), session);
-		usersessions.put(session.getId(), usersession);
 
 	}
 
@@ -103,17 +109,12 @@ public class EventBroker implements Runnable {
 
 								System.out.println("push " + usersession.getId());
 								if (usersession.isOpen()) {
-
-									sessions.get(usersession.getId()).getBasicRemote().sendText("T##"+frameresult);
-
+									sessions.get(usersession.getId()).getBasicRemote().sendText(frameresult);
 								} else {
 									//TODO add logging
-
 									System.out.println("close " + usersession.getId());
-
 									sessions.remove(usersession.getId());
 									usersessions.remove(usersession.getId());
-
 									frame.closeSession(usersession);
 								}
 							}

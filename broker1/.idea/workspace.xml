@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="93b2f7c9-6bbe-41f8-860c-516ea3606cb4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eclipse.exe neon.lnk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/.classpath" beforeDir="false" afterPath="$PROJECT_DIR$/../eventbroker/.classpath" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" afterPath="$PROJECT_DIR$/../eventbroker/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/.settings/org.eclipse.wst.common.component" beforeDir="false" afterPath="$PROJECT_DIR$/../eventbroker/.settings/org.eclipse.wst.common.component" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../eventbroker/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/http/AutoCheckClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/http/AutoCheckClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/http/ClientSessionNoJetty.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/http/ClientSessionNoJetty.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/http/HttpSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/http/HttpSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/http/IResponseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/http/IResponseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/http/RequestFunc.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/http/RequestFunc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/http/ResponseFunc.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/http/ResponseFunc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/EventService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/EventService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/MessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/MessageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/NoteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/NoteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/TimeFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/TimeFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/UserSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/UserSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/basic/BasicEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/basic/BasicEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/dom/FeedBack.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/dom/FeedBack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/dom/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/dom/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/dom/Note.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/dom/Note.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/dom/ResultSlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/dom/ResultSlot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/football/FootballEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/football/FootballEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/event/football/FootballFeedback.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/event/football/FootballFeedback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/persistdom/EventStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/mg/persistdom/EventStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/service/EventBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/../eventbroker/src/no/auke/mg/service/EventBroker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/Base64.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/Base64.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/BaseRunable.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/BaseRunable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/ByteUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/ByteUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/DateTimeHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/DateTimeHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/FilePair.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/FilePair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/FileUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/ListNetworks.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/ListNetworks.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/Lock.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/Lock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/SafeBufferedReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/SafeBufferedReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/StopWatch.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/StopWatch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/StringConv.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/StringConv.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/auke/util/StringUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/main/java/no/auke/util/StringUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/src/no/test/EventBrokerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/test/java/no/test/EventBrokerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/test/pos/pos-1.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../eventbroker/test/status.json" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1cmGJwGihfaWi371e2BhEfa8Vza" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="93b2f7c9-6bbe-41f8-860c-516ea3606cb4" name="Default Changelist" comment="" />
+      <created>1591126287035</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1591126287035</updated>
+      <workItem from="1591126289863" duration="4000" />
+    </task>
+    <servers />
+  </component>
+</project>
