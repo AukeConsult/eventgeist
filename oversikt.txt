@@ -1,0 +1,14 @@
+Oversikt over komponenter og prosjekter
+
+frontend	frontend prosjekter 
+	
+	gui	innholder all gui web sider
+	js-lib	innholder java script biblioteker
+
+serverside	server prosjekter (motor og restapi)
+	
+	broker	tomcat web service prosjekt for socket og event api
+	server	library prosjekt for motor (innholder alle funksjonelle classer)
+	dao	library prosjekt for data lager (ikke impl)
+	
+	
