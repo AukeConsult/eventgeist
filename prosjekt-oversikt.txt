@@ -12,3 +12,18 @@ serverside	server prosjekter (motor og restapi)
 	dao	library prosjekt for data lager (ikke impl)
 	
 	
+Maskiner og installasjoner
+
+Tomcat testserver		
+Adresse: 	89.221.242.36
+Bruker:		auke
+Passoed 	#auke123#
+
+Tomcat testserver 
+http://89.221.242.36:8080	
+bruker: 	admin
+passord: 	auke123
+
+Broker adresse
+http://89.221.242.36:8080/broker	
+
