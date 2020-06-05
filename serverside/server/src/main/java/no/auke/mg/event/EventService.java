@@ -35,7 +35,7 @@ public abstract class EventService  {
 	private AtomicInteger currentpos= new AtomicInteger();
 	public int getCurrentpos() {return currentpos.get();}
 
-	private int timeslot_period=2000;
+	private int timeslot_period=1000;
 	public int getTimeslot_period() {return timeslot_period;}
 
 	protected Map<Integer, ResultSlot> resultslots = new ConcurrentHashMap<Integer, ResultSlot>();
@@ -214,6 +214,8 @@ public abstract class EventService  {
 
 		for(TimeFrame timeframe:timeframes.values()) {
 
+			executeSlotStart(timeframe);
+
 			int slotpos = currentpos.get() - timeframe.getDelay();
 
 			ResultSlot slot=null;
@@ -225,7 +227,7 @@ public abstract class EventService  {
 			}
 			for(UserSession user:timeframe.getUserSessions()) {
 				if(user.isOpen()) {
-					executeResponse(user, slot);
+					executeResponse(user, slot, (int) ((System.currentTimeMillis() - starttime)));
 				}
 			}
 			executeResult(slot);
@@ -233,6 +235,9 @@ public abstract class EventService  {
 				resultslots.put(slot.currentpos, slot);
 				timeframe.setResultslot(slot);
 			}
+
+			executeSlotEnd(slot);
+
 
 		}
 
@@ -244,8 +249,12 @@ public abstract class EventService  {
 		}
 	}
 
-	protected abstract void executeResponse(UserSession usersession,ResultSlot slot);
+	protected abstract void executeSlotStart(TimeFrame timeframe);
+	protected abstract void executeResponse(UserSession usersession,ResultSlot slot, int time);
+	protected abstract void executeSlotEnd(ResultSlot slot);
+
 	protected abstract void executeResult(ResultSlot slot);
+
 	protected abstract ResultSlot newResultSlot();
 
 }

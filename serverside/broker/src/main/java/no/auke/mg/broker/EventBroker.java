@@ -22,7 +22,7 @@ public class EventBroker implements Runnable {
 	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 	private static Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 
-	private static int report_period_default=5000;
+	private static int timeslot_period_default=2000;
 	public static String reportDir="";
 
 	private static EventDao eventdao;
@@ -42,9 +42,9 @@ public class EventBroker implements Runnable {
 			if(!events.containsKey(eventid.trim())) {
 				// check what type of event
 				if(eventtype.trim().equals("football")) {
-					events.put(eventid, new FootballEvent(eventid.trim(), report_period_default));
+					events.put(eventid, new FootballEvent(eventid.trim(), timeslot_period_default));
 				} else {
-					events.put(eventid, new BasicEvent(eventid.trim(), report_period_default));
+					events.put(eventid, new BasicEvent(eventid.trim(), timeslot_period_default));
 				}
 				// read event info
 

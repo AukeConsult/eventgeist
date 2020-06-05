@@ -9,10 +9,7 @@ import no.auke.mg.event.dom.FeedBack;
 
 public class FootballFeedback extends FeedBack {
 
-	public int team1Hits=0;
-	public int team2Hits=0;
-	public Map<String, Map<String,Integer>> hits = new HashMap<String, Map<String,Integer>>();
 	public List<String> messages = new ArrayList<String>();
-
+	public Map<String, Map<String,Object>> teams = new HashMap<String, Map<String,Object>>();
 
 }

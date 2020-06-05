@@ -117,7 +117,7 @@ String uri = request.getServerName() +
 
 <div style="font-family: verdana; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center;">
 	
-	<h2>Testing event response</h2>
+	<h2>Test event response</h2>
 
 	<div id="match" visible=true>
 		

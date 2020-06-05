@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import no.auke.mg.event.EventService;
+import no.auke.mg.event.TimeFrame;
 import no.auke.mg.event.UserSession;
 import no.auke.mg.event.dom.ResultSlot;
 
@@ -14,8 +15,26 @@ public class FootballEvent extends EventService {
 		super(eventid,timeslot_period);
 	}
 
+	private Map<String, Integer> supporters = new HashMap<String,Integer>();
+
 	@Override
-	protected void executeResponse(UserSession user, ResultSlot slot) {
+	protected void executeSlotStart(TimeFrame timeframe) {
+		supporters.clear();
+	}
+	@Override
+	protected void executeSlotEnd(ResultSlot slot) {}
+
+
+	@Override
+	protected void executeResponse(UserSession user, ResultSlot slot, int time) {
+
+		if(!supporters.containsKey(user.getSupport())) {
+			supporters.put(user.getSupport(), 0);
+		}
+
+		int suppcnt = supporters.get(user.getSupport());
+		suppcnt +=1;
+		supporters.put(user.getSupport(),suppcnt);
 
 		List<String> responses = user.readResponses();
 		if(responses.size()>0) {
@@ -30,29 +49,41 @@ public class FootballEvent extends EventService {
 			}
 
 			FootballFeedback res = (FootballFeedback)slot.resultObject;
-			if(user.getSupport().equals("team1")) {
-				res.team1Hits += responses.size();
-			} else if(user.getSupport().equals("team2")) {
-				res.team2Hits += responses.size();
+			if(!res.teams.containsKey(user.getSupport())) {
+				res.teams.put(user.getSupport(), new HashMap<String,Object>());
+			}
+			Map<String,Object> teamres = res.teams.get(user.getSupport());
+
+			if(!teamres.containsKey("numsupp")){
+				teamres.put("numsupp",supporters.get(user.getSupport()));
 			}
 
 			for(String response:responses) {
 
 				if(response.startsWith("C#")) {
 
-					String hit = response.substring(2);
-					System.out.println(user.getUserid() + ":" + hit);
+					String btn = response.substring(2);
 
-					if(!res.hits.containsKey(user.getSupport())){
-						res.hits.put(user.getSupport(),new HashMap<String, Integer>());
+					if(!teamres.containsKey("hits")){
+						teamres.put("hits",new HashMap<String,Map<String,Object>>());
 					}
-					Map<String,Integer> hitres = res.hits.get(user.getSupport());
-					if(!hitres.containsKey(hit)) {
-						hitres.put(hit, 0);
+					Map<String,Object> hits = (Map<String, Object>) teamres.get("hits");
+
+					if(!hits.containsKey(btn)) {
+						Map<String,Integer> val = new HashMap<String,Integer>();
+						val.put("hit",0);
+						val.put("avg",0);
+						hits.put(btn, val);
 					}
-					int cnt = hitres.get(hit);
-					cnt += 1;
-					hitres.put(hit,cnt);
+					Map<String,Integer> value = (Map<String, Integer>) hits.get(btn);
+
+					int hit_cnt = value.get("hit");
+					hit_cnt += 1;
+					value.put("hit",hit_cnt);
+
+					int avg_cnt = value.get("avg");
+					avg_cnt += 1;
+					value.put("avg",avg_cnt);
 
 				} else if (response.startsWith("M#")) {
 
@@ -62,8 +93,9 @@ public class FootballEvent extends EventService {
 				}
 
 			}
-			res.lastmsgid=this.getMessageService().lastMsgid(user.getDelay());
-			res.lastnoteid=this.getNoteService().lastNoteid(user.getDelay());
+			res.time=time;
+			//res.lastmsgid=this.getMessageService().lastMsgid(user.getDelay());
+			//res.lastnoteid=this.getNoteService().lastNoteid(user.getDelay());
 
 		}
 	}
@@ -86,5 +118,9 @@ public class FootballEvent extends EventService {
 
 	@Override
 	protected ResultSlot newResultSlot() {return new ResultSlot();}
+
+
+
+
 
 }

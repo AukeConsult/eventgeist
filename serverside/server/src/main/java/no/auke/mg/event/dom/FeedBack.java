@@ -4,7 +4,8 @@ public class FeedBack {
 
 	public String eventid;
 	public int slotpos=0;
-	public int lastnoteid;
-	public int lastmsgid;
+	public int time=0;
+	//public int lastnoteid;
+	//public int lastmsgid;
 
 }

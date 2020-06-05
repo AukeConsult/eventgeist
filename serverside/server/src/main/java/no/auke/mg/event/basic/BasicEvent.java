@@ -3,6 +3,7 @@ package no.auke.mg.event.basic;
 import java.util.List;
 
 import no.auke.mg.event.EventService;
+import no.auke.mg.event.TimeFrame;
 import no.auke.mg.event.UserSession;
 import no.auke.mg.event.dom.ResultSlot;
 
@@ -15,46 +16,47 @@ public class BasicEvent extends EventService {
 	private String makeQ(String value) {
 		return "\"" + value + "\"";
 	}
-	
-	protected void executeResponse(UserSession user, ResultSlot slot) {
-		List<String> responses = user.readResponses(); 
+
+	@Override
+	protected void executeResponse(UserSession user, ResultSlot slot, int time) {
+		List<String> responses = user.readResponses();
 		for(String response:responses) {
 
 			if (response.startsWith("#C")) {
-		    	if(!slot.hits.containsKey(user.getSupport())) {
-		    		slot.hits.put(user.getSupport(), 0);
-		    	}
-		    	slot.hits.put(user.getSupport(), slot.hits.get(user.getSupport()) + 1);
+				if(!slot.hits.containsKey(user.getSupport())) {
+					slot.hits.put(user.getSupport(), 0);
+				}
+				slot.hits.put(user.getSupport(), slot.hits.get(user.getSupport()) + 1);
 			}
-			
-//			slot.responses.add("{" + 
-//					makeQ("usr") + ":" + makeQ(user.getUserid()) + 
-//					"," + makeQ("rsp") + ":" + makeQ(response) + 
-//					"," +  makeQ("sup") + ":" + makeQ(user.getSupport()) + 
-//					"}") ;
-			
+
+			//			slot.responses.add("{" +
+			//					makeQ("usr") + ":" + makeQ(user.getUserid()) +
+			//					"," + makeQ("rsp") + ":" + makeQ(response) +
+			//					"," +  makeQ("sup") + ":" + makeQ(user.getSupport()) +
+			//					"}") ;
+
 		}
-		
+
 	}
 
 	@Override
 	protected void executeResult(ResultSlot slot) {
-		
+
 		String hits="";
 		slot.resultString="";
-		if(slot.hits.size()>0) {			
-			hits= makeQ("hits") + ":" + System.getProperty("line.separator") + "[" + System.getProperty("line.separator"); 
+		if(slot.hits.size()>0) {
+			hits= makeQ("hits") + ":" + System.getProperty("line.separator") + "[" + System.getProperty("line.separator");
 			String list="";
 			for(String support:slot.hits.keySet()) {
-				list += (list.length()>0?","+ System.getProperty("line.separator"):"") + "{" + 
-						makeQ("sup") + ":" + makeQ(support) + "," +  
-						makeQ("cnt") + ":" + slot.hits.get(support).toString() + 
+				list += (list.length()>0?","+ System.getProperty("line.separator"):"") + "{" +
+						makeQ("sup") + ":" + makeQ(support) + "," +
+						makeQ("cnt") + ":" + slot.hits.get(support).toString() +
 						"}";
-			}			
+			}
 			hits += list + System.getProperty("line.separator") + "]" ;
 		}
-		String resp="";		
-		
+		String resp="";
+
 		/*
 		if(slot.responses.size()>0) {
 			resp=makeQ("hits") + ": [";
@@ -64,20 +66,32 @@ public class BasicEvent extends EventService {
 			}
 			resp += list + "]";
 		}
-		*/
-		
-		if(resp.length()>0 || hits.length()>0) {			
+		 */
+
+		if(resp.length()>0 || hits.length()>0) {
 			slot.resultString = "{" + System.getProperty("line.separator") +
 					makeQ("evt") + ":" + makeQ(getEventid()) + "," + System.getProperty("line.separator") +
 					makeQ("slotpos") + ":" + String.valueOf(slot.currentpos) +
-					(hits.length()>0?","+ System.getProperty("line.separator")+hits:"") + 
-					(resp.length()>0?","+ System.getProperty("line.separator")+resp:"") + 
+					(hits.length()>0?","+ System.getProperty("line.separator")+hits:"") +
+					(resp.length()>0?","+ System.getProperty("line.separator")+resp:"") +
 					System.getProperty("line.separator") + "}" ;
-		}		
+		}
 		slot.responses.clear();
 	}
 
 	@Override
 	protected ResultSlot newResultSlot() {return new ResultSlot();}
+
+	@Override
+	protected void executeSlotEnd(ResultSlot slot) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void executeSlotStart(TimeFrame timeframe) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
