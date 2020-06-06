@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <title>Chart.js test</title>
+</head>
+
+<body>
+  <div class="container mt-3">
+    <h3 class="text-center">Live view demo</h3>
+
+    <div id="connectForm" class="form">
+      <div class="form-group">
+        <label for="eventId">Event ID</label>
+        <input id="eventId" class="form-control" type="text" value="10">
+      </div>
+      <div class="form-group">
+        <label for="nick">Nickname</label>
+        <input id="nick" class="form-control" type="text" value="Supporter no. 1" />
+      </div>
+      <div class="form-group">
+        <label for="teamId">Event type</label>
+        <input id="teamId" class="form-control" type="text" value="team1" />
+      </div>
+      <button class="btn btn-primary" onclick="connect();">Connect</button>
+    </div>
+
+    <div id="liveView" class="d-none">
+      <canvas id="gauge" style="width: 80%; max-width: 600px; margin: 0 auto;"></canvas>
+
+      <div class="text-center">
+        <button class="btn btn-primary" onclick="send('C#jubel');">Jubel</button>
+        <button class="btn btn-outline-primary" onclick="send('C#buu');">Buu</button>
+      </div>
+    </div>
+
+
+  </div>
+  <script>
+    const wsUri = 'ws://89.221.242.36:8080/broker';
+    let webSocket;
+
+    function connect() {
+      // Hide connect form
+      document.getElementById('connectForm').classList.add('d-none');
+
+      // Show chart div
+      document.getElementById('liveView').classList.remove('d-none');
+
+      // Get input
+      let eventId = document.getElementById('eventId').value;
+      let nick = document.getElementById('nick').value;
+      let teamId = document.getElementById('teamId').value;
+      let eventType = 'football';
+
+      try {
+        webSocket = new WebSocket(wsUri + '/evsocket?eventtype=' + eventType.trim() + '&event=' + eventId.trim() + ' &user=' + nick.trim() + '&support=' + teamId.trim());
+        webSocket.onopen = function (event) {
+          console.log('onopen::' + JSON.stringify(event, null, 4));
+        }
+        webSocket.onmessage = function (event) {
+          console.log('onmessage::', event.data);
+          prosessMessage(event.data);
+        }
+        webSocket.onclose = function (event) {
+          console.log('onclose::' + JSON.stringify(event, null, 4));
+        }
+        webSocket.onerror = function (event) {
+          console.log('onerror::' + JSON.stringify(event, null, 4));
+        }
+      } catch (exception) {
+        console.error(exception);
+        alert(exception);
+      }
+    }
+
+    function send(message) {
+      if (webSocket.readyState == WebSocket.OPEN) {
+        webSocket.send(message);
+      } else {
+        console.error('webSocket is not open. readyState = ' + webSocket.readyState);
+        alert('webSocket is not open. readyState = ' + webSocket.readyState);
+      }
+    }
+
+    function prosessMessage(data) {
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch (exception) {
+        // console.error(exception);
+      }
+
+      if (json) {
+        console.log(json);
+        let currentJubelTeam1 = json.teams.team1.hits.jubel.avg;
+        let currentJubelTeam2 = Math.random() * 3; // Temporarily fake (Random 0->3)
+        
+        chartData.datasets[0].data[0] = currentJubelTeam1;
+        chartData.datasets[0].data[1] = currentJubelTeam2;
+        chart.update();
+      } else {
+        console.log(data);
+
+      }
+    }
+  </script>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+  <script>
+    var chartData = {
+      labels: [
+        "Team 1",
+        "Team 2",
+      ],
+      datasets: [
+        {
+          data: [25, 75],
+          backgroundColor: [
+            "#3498db",
+            "#e67e22",
+          ],
+        }]
+    };
+
+    let canvas = document.getElementById('gauge').getContext('2d');
+    let chart = new Chart(canvas, {
+      type: 'doughnut',
+      data: chartData,
+      options: {
+        rotation: 1 * Math.PI,
+        circumference: 1 * Math.PI
+      }
+    });
+  </script>
+</body>
+
+</html>
