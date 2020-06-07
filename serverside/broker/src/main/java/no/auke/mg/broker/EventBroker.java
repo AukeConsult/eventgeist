@@ -6,12 +6,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.Session;
 
+import no.auke.mg.event.EventMonitor;
 import no.auke.mg.event.EventService;
 import no.auke.mg.event.TimeFrame;
 import no.auke.mg.event.UserSession;
 import no.auke.mg.event.basic.BasicEvent;
 import no.auke.mg.event.dao.EventDao;
 import no.auke.mg.event.football.FootballEvent;
+import no.auke.mg.event.models.EventInfo;
 
 public class EventBroker implements Runnable {
 
@@ -33,23 +35,39 @@ public class EventBroker implements Runnable {
 		return eventdao;
 	}
 
+	public static EventMonitor monitor;
+
 	private EventBroker() {}
 
 	public static void addSession(Session session, String eventtype, String eventid, String userid, String support, String position) {
 
+		initialize();
+
 		try {
 
 			if(!events.containsKey(eventid.trim())) {
+
+				// get eventifo
+
+				EventInfo info = new EventInfo();
+				info.setEventid(eventid.trim());
+				info.setType(eventtype.trim());
+				info.setTimeslot_period(timeslot_period_default);
+
 				// check what type of event
-				if(eventtype.trim().equals("football")) {
-					events.put(eventid, new FootballEvent(eventid.trim(), timeslot_period_default));
+				if(info.equals("football")) {
+
+					events.put(info.getEventid(), new FootballEvent(info, monitor));
+
 				} else {
-					events.put(eventid, new BasicEvent(eventid.trim(), timeslot_period_default));
+					events.put(info.getEventid(), new BasicEvent(info, monitor));
 				}
 				// read event info
 
 				// initialize and start event
-				events.get(eventid.trim()).init(EventBroker.reportDir);
+				events.get(info.getEventid()).init(EventBroker.reportDir);
+
+
 			}
 
 			EventService event = events.get(eventid.trim());
@@ -84,11 +102,15 @@ public class EventBroker implements Runnable {
 	public static void initialize() {
 
 		if (instance == null) {
+
 			// read parameters
 			reportDir="C:/projects/tmp_testoutput/events/";
 			new File(reportDir).mkdir();
+
 			//reportDir = System.getProperty("user.dir") + "/events/";
 			instance = new EventBroker();
+			monitor = new EventMonitor();
+
 			new Thread(instance).start();
 		}
 

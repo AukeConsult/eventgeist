@@ -17,7 +17,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import no.auke.mg.event.dom.ResultSlot;
+import no.auke.mg.event.models.EventInfo;
+import no.auke.mg.event.models.Status;
 import no.auke.mg.persistdom.EventStatus;
 
 
@@ -47,23 +48,37 @@ public abstract class EventService  {
 	protected Queue<ResultSlot> calculated_slots = new ConcurrentLinkedQueue<ResultSlot>();
 	public Queue<ResultSlot> getCalculated_slots() {return calculated_slots;}
 
-
-	private MessageService 	messageService;
-	public MessageService getMessageService() {return messageService;}
-
-	private NoteService 	noteService;
-	public NoteService getNoteService() {return noteService;}
-
-
 	protected ObjectMapper objectMapper = new ObjectMapper();
+
+	// running statuses and meta information
+	private Map<String, Status> status;
+	public Map<String, Status> getStatus() {return status;}
+	public void setStatus(Map<String, Status> status) {this.status = status;}
+
+	private EventInfo eventinfo;
+	public EventInfo getEventinfo() {return eventinfo;}
+	public void setEventinfo(EventInfo eventinfo) {this.eventinfo = eventinfo;}
+
+	// services
+	private MessageService 	messageService;
+	public MessageService 	getMessageService() {return messageService;}
+
+	private EventMonitor 	monitor;
+	public EventMonitor 	getMonitor() {return monitor;}
 
 	protected String persistDir;
 	protected String persistDirPos;
 
+	public EventService(EventInfo eventinfo, EventMonitor monitor) {
+		this.eventid=eventinfo.getEventid();
+		this.timeslot_period=eventinfo.getTimeslot_period();
+		this.eventinfo = eventinfo;
+		this.monitor=monitor;
+	}
+
 	public void hit() {
 		hits.incrementAndGet();
 	}
-
 
 	public void saveSlots() {
 
@@ -113,19 +128,15 @@ public abstract class EventService  {
 
 	}
 
-	public EventService(String eventid, int timeslot_period) {
-		this.eventid=eventid;
-		this.timeslot_period=timeslot_period;
-	}
+
 
 	// init and read up even informations
 	public void init(String reportDir) {
 
 		messageService = new MessageService(this);
-		noteService = new NoteService(this);
-
 
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
 		starttime=System.currentTimeMillis();
 
 		persistDir = reportDir + eventid;

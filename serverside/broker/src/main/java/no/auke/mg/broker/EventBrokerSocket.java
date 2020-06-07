@@ -20,7 +20,6 @@ public class EventBrokerSocket {
 		System.out.println("open " + session.getId());
 		Map<String, List<String>> params = session.getRequestParameterMap();
 
-		EventBroker.initialize();
 		EventBroker.addSession(
 				session,
 				params.get("eventtype") != null?params.get("eventtype").get(0).trim():"standard",
