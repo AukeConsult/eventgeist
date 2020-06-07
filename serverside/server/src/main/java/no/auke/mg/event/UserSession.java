@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class UserSession {
 
@@ -23,6 +24,7 @@ public class UserSession {
 	public String getSupport() {return support;}
 	public String getPosition() {return position!=null?position:"";}
 
+
 	public boolean isOpen() {
 		return open.get();
 	}
@@ -30,8 +32,20 @@ public class UserSession {
 	private List<String> responses = Collections.synchronizedList(new ArrayList<String>());
 	public int getNumResponses() {return responses.size();}
 	public void addResponse(String response) {
+
 		event.hit();
-		responses.add(response);
+		// check commands
+		if(response.startsWith("SI#")) {
+			// set eventinfo
+
+
+		} else if (response.startsWith("GI#")) {
+
+
+		} else {
+			responses.add(response);
+		}
+
 	}
 
 	public List<String> readResponses() {
@@ -64,6 +78,38 @@ public class UserSession {
 
 	public void close() {
 		open.set(false);
+	}
+
+
+	private ReentrantLock lock = new ReentrantLock();
+	private List<FeedBack> results = new ArrayList<FeedBack>();
+
+	public void setFeedback(FeedBack feedback) {
+		try {
+			lock.lock();
+			this.results.add(feedback);
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public List<String> readResults() {
+		try {
+			lock.lock();
+			if(results.size()>0) {
+
+				List<String> ret = new ArrayList<String>();
+				return ret;
+
+			} else {
+				return null;
+			}
+		} finally {
+			if(results.size()>0) {
+				results.clear();
+			}
+			lock.unlock();
+		}
 	}
 
 }

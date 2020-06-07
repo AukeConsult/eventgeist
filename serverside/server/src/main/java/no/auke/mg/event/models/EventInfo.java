@@ -1,10 +1,11 @@
-package no.auke.mg.event.dom;
+package no.auke.mg.event.models;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Event {
+public class EventInfo {
 
 	private String eventid;
 	public String getEventid() {return eventid;}
@@ -18,6 +19,10 @@ public class Event {
 	public String getEventname() {return eventname;}
 	public void setEventname(String eventname) {this.eventname = eventname;}
 
+	private String eventtags;
+	public String getEventtags() {return eventtags;}
+	public void setEventtags(String eventtags) {this.eventtags = eventtags;}
+
 	private Date eventstart;
 	public Date getEventstart() {return eventstart;}
 	public void setEventstart(Date eventstart) {this.eventstart = eventstart;}
@@ -26,19 +31,33 @@ public class Event {
 	public Date getEventstop() {return eventstop;}
 	public void setEventstop(Date eventstop) {this.eventstop = eventstop;}
 
-	private Map<String, Object> teams;
-	public Map<String, Object> getTeams() {return teams;}
-	public void setTeams(Map<String, Object> teams) {this.teams = teams;}
+	private int timeslot_period=2000;
+	public int getTimeslot_period() {return timeslot_period;}
+	public void setTimeslot_period(int timeslot_period) {this.timeslot_period = timeslot_period;}
 
-	private Map<String, Object> status;
-	public Map<String, Object> getStatus() {return status;}
-	public void setStatus(Map<String, Object> status) {this.status = status;}
+	public int avg1time;
+	public int getAvg1time() {return avg1time;}
+	public void setAvg1time(int avg1time) {this.avg1time = avg1time;}
+
+	public int avg2time;
+	public int getAvg2time() {return avg2time;}
+	public void setAvg2time(int avg2time) {this.avg2time = avg2time;}
+
+	private Map<String, Team> teams = new HashMap<String,Team>();
+	public Map<String, Team> getTeams() {return teams;}
+	public void setTeams(Map<String, Team> teams) {this.teams = teams;}
+
+	// Process information
+	private String server;
+	public String getServer() {return server;}
+	public void setServer(String server) {this.server = server;}
 
 	private List<String> brokers;
 	public List<String> getBrokers() {return brokers;}
 	public void setBrokers(List<String> brokers) {this.brokers = brokers;}
 
-
-
+	private Map<String, Object> props;
+	public Map<String, Object> getProps() {return props;}
+	public void setProps(Map<String, Object> props) {this.props = props;}
 
 }

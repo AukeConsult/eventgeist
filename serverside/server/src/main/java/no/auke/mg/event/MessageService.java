@@ -3,7 +3,7 @@ package no.auke.mg.event;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.auke.mg.event.dom.Message;
+import no.auke.mg.event.models.Message;
 
 public class MessageService {
 

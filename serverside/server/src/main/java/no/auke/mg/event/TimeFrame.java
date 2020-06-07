@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import no.auke.mg.event.dom.ResultSlot;
-
 // all user session within the same time frame
 public class TimeFrame {
 

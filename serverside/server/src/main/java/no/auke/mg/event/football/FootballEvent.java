@@ -4,15 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import no.auke.mg.event.EventMonitor;
 import no.auke.mg.event.EventService;
+import no.auke.mg.event.ResultSlot;
 import no.auke.mg.event.TimeFrame;
 import no.auke.mg.event.UserSession;
-import no.auke.mg.event.dom.ResultSlot;
+import no.auke.mg.event.models.EventInfo;
 
 public class FootballEvent extends EventService {
 
-	public FootballEvent(String eventid, int timeslot_period) {
-		super(eventid,timeslot_period);
+	public FootballEvent(EventInfo eventinfo, EventMonitor monitor) {
+		super(eventinfo, monitor);
 	}
 
 	private Map<String, Integer> supporters = new HashMap<String,Integer>();
@@ -37,6 +39,7 @@ public class FootballEvent extends EventService {
 		supporters.put(user.getSupport(),suppcnt);
 
 		List<String> responses = user.readResponses();
+
 		if(responses.size()>0) {
 
 			slot.isresult=true;
@@ -45,7 +48,9 @@ public class FootballEvent extends EventService {
 				FootballFeedback res = new FootballFeedback();
 				res.slotpos=slot.currentpos;
 				res.eventid=getEventid();
+				res.type="R";
 				slot.resultObject=res;
+
 			}
 
 			FootballFeedback res = (FootballFeedback)slot.resultObject;
@@ -89,6 +94,12 @@ public class FootballEvent extends EventService {
 
 					this.getMessageService().addMessage(user.getId(), slot.currentpos, user.getDelay(), response.substring(2));
 					res.messages.add(user.getUserid() + ":" + response.substring(2));
+
+				} else if (response.startsWith("E#")) {
+
+					//
+
+
 
 				}
 

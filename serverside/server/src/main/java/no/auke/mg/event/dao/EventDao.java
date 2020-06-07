@@ -4,15 +4,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.auke.mg.event.dom.Event;
+import no.auke.mg.event.models.EventInfo;
 
 public class EventDao {
 
-	public void storeEvent(Event event) {}
+	public void storeEvent(EventInfo event) {}
 
-	public Event readEvent(String eventid) {
+	public EventInfo readEvent(String eventid) {
 
-		Event event = new Event();
+		EventInfo event = new EventInfo();
 		event.setEventid(eventid);
 		event.setType("football");
 		event.setEventname(eventid + " kampen");

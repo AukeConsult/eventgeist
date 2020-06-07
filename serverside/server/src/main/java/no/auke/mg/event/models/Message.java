@@ -1,4 +1,4 @@
-package no.auke.mg.event.dom;
+package no.auke.mg.event.models;
 
 public class Message {
 
