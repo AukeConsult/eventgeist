@@ -1,0 +1,53 @@
+Format description
+
+{	"evid":test3,	// unique idea for event
+	"t":"S",	// type transaction (S=snapshot timeline, I=eventinfo (ikke impl), H=history (Ikke impl)
+	"sp":34,	// slotpos	
+	"tm":2470,	// time in MS sinze event start
+	"st":null,	// Status objects (not ready)
+	"teams":{	// teamlist
+		
+		"team1": {		// team 1 data	
+			"num":5,	// number of supporters active
+			"hits":{	// total hits
+				"val":1.0,	// number of hits in period
+				"avg1":2.4,	// average hists last 10 seconds
+				"avg2":0.0	// average hists last minutes (ikke impl)
+				},
+			"btn":	{
+				"btn2":{	// data for button med navn btn2	
+					"val":0.0,	// number of hits in period for button
+					"avg1":0.8,	// average hists last 10 seconds for button
+					"avg2":0.0	// average hists last minutes (ikke impl) for button
+					},
+				"btn1":{	// data for button med navn btn2
+					"val":1.0,
+					"avg1":1.6,
+					"avg2":0.0}
+				}
+			},
+		"team2":{		// team 2 data
+			"num":5,
+			"hits":{
+				"val":4.0,
+				"avg1":2.4,
+				"avg2":0.0
+			},
+			"btn":{
+				"btn2":{
+					"val":2.0,
+					"avg1":0.7,
+					"avg2":0.0
+					},
+				"btn1":{
+					"val":2.0,
+					"avg1":1.7,
+					"avg2":0.0
+					}
+				}
+			}
+		},
+
+	"messages":[]	// innkomne meldinger (ikke impl)
+
+}

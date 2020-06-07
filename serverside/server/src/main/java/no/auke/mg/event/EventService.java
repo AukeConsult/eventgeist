@@ -1,25 +1,19 @@
 package no.auke.mg.event;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
+import no.auke.mg.event.feedbacks.FeedBackSlot;
 import no.auke.mg.event.models.EventInfo;
+import no.auke.mg.event.models.EventStatus;
+import no.auke.mg.event.models.ResultSlot;
 import no.auke.mg.event.models.Status;
-import no.auke.mg.persistdom.EventStatus;
+import no.auke.mg.event.models.Team;
 
 
 public abstract class EventService  {
@@ -45,104 +39,72 @@ public abstract class EventService  {
 	protected Map<Integer, TimeFrame> timeframes = new ConcurrentHashMap<Integer, TimeFrame>();
 	public List<TimeFrame> getTimeframes() {return new ArrayList<TimeFrame>(timeframes.values());}
 
-	protected Queue<ResultSlot> calculated_slots = new ConcurrentLinkedQueue<ResultSlot>();
-	public Queue<ResultSlot> getCalculated_slots() {return calculated_slots;}
 
-	protected ObjectMapper objectMapper = new ObjectMapper();
+	private EventInfo 		eventinfo;
+	public EventInfo 		getEventinfo() {return eventinfo;}
+	public void 			setEventinfo(EventInfo eventinfo) {this.eventinfo = eventinfo;}
 
-	// running statuses and meta information
-	private Map<String, Status> status;
-	public Map<String, Status> getStatus() {return status;}
-	public void setStatus(Map<String, Status> status) {this.status = status;}
-
-	private EventInfo eventinfo;
-	public EventInfo getEventinfo() {return eventinfo;}
-	public void setEventinfo(EventInfo eventinfo) {this.eventinfo = eventinfo;}
+	private Messages 		messages;
+	public Messages 		getMessages() {return messages;}
 
 	// services
-	private MessageService 	messageService;
-	public MessageService 	getMessageService() {return messageService;}
+	private Monitor 		monitor;
+	public Monitor 			getMonitor() {return monitor;}
 
-	private EventMonitor 	monitor;
-	public EventMonitor 	getMonitor() {return monitor;}
+	private Storage 		storage;
+	public Storage 			getStorage() {return storage;}
 
 	protected String persistDir;
 	protected String persistDirPos;
 
-	public EventService(EventInfo eventinfo, EventMonitor monitor) {
+	public EventService(EventInfo eventinfo, Monitor monitor, Storage storage) {
+
 		this.eventid=eventinfo.getEventid();
+		this.messages = new Messages(this);
+
 		this.timeslot_period=eventinfo.getTimeslot_period();
 		this.eventinfo = eventinfo;
 		this.monitor=monitor;
+		this.storage=storage;
+
+
 	}
 
 	public void hit() {
 		hits.incrementAndGet();
 	}
 
-	public void saveSlots() {
-
-		if(calculated_slots.size()>0) {
-
-			while(calculated_slots.peek()!=null) {
-				try {
-					ResultSlot slot = calculated_slots.poll();
-					if(slot!=null) {
-						objectMapper.writeValue(new File(persistDirPos + "/slotpos-" + String.valueOf(slot.currentpos) + ".json"), slot);
-					}
-				} catch (JsonGenerationException e) {
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-		}
-	}
-
 	public void persist() {
 
-		try {
+		EventStatus status = new EventStatus();
+		status.setEventid(eventid);
+		status.setCurrentpos(currentpos.get());
+		status.setStarttime(starttime);
+		status.setTimeslot_period(timeslot_period);
+		status.setTimeframes(timeframes.size());
+		status.setHits(hits.get());
 
-			EventStatus status = new EventStatus();
-			status.setEventid(eventid);
-			status.setCurrentpos(currentpos.get());
-			status.setStarttime(starttime);
-			status.setTimeslot_period(timeslot_period);
-			status.setTimeframes(timeframes.size());
-			status.setHits(hits.get());
-
-			int cnt=0;
-			for(TimeFrame timeframe:getTimeframes()) {
-				cnt+=timeframe.getUserSessions().size();
-			}
-
-			status.setUsersessions(cnt);
-			objectMapper.writeValue(new File(persistDir + "/status.json"), status);
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		int cnt=0;
+		for(TimeFrame timeframe:getTimeframes()) {
+			cnt+=timeframe.getUserSessions().size();
 		}
+		status.setUsersessions(cnt);
+		storage.saveEventStatus(status);
 
 	}
 
-
+	private AtomicBoolean stopthread = new AtomicBoolean(false);
+	public void stop() {
+		stopthread.set(true);
+	}
 
 	// init and read up even informations
-	public void init(String reportDir) {
-
-		messageService = new MessageService(this);
-
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+	public void init() {
 
 		starttime=System.currentTimeMillis();
+		persist();
 
-		persistDir = reportDir + eventid;
-		new File(persistDir).mkdir();
-		persistDirPos=persistDir + "/slotpos";
-		new File(persistDirPos).mkdir();
+		storage.doSave();
 
 		// persist status
 
@@ -153,22 +115,6 @@ public abstract class EventService  {
 				// persist status
 				while (!stopthread.get()) {
 					persist();
-					try {
-						Thread.sleep(1000*10);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		}).start();
-
-
-		// save slots
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// persist status
-				while (!stopthread.get()) {
-					saveSlots();
 					try {
 						Thread.sleep(1000*10);
 					} catch (InterruptedException e) {
@@ -194,15 +140,31 @@ public abstract class EventService  {
 			}
 		}).start();
 
-
 	}
 
 	public void addUser(UserSession session) {
+
 		if(!timeframes.containsKey(session.getDelay())) {
 			timeframes.put(session.getDelay(), new TimeFrame(this,session.getDelay()));
 		}
+		if(!eventinfo.getTeams().containsKey(session.getTeam())) {
+			initTeam(eventinfo.createTeam(session.getTeam()));
+		}
 		timeframes.get(session.getDelay()).addUser(session);
+
 	}
+
+	AtomicInteger send_status = new AtomicInteger();
+	public void setStatus(String type, String json, int delay) {
+		if(timeframes.containsKey(delay)) {
+			if(!timeframes.get(delay).getStatus().containsKey(type)) {
+				timeframes.get(delay).getStatus().put(type,new Status());
+			}
+			timeframes.get(delay).getStatus().get(type).setVal(json);
+			send_status.set(0);
+		}
+	}
+
 
 	public List<UserSession> getUserSessions() {
 		List<UserSession> ret = new ArrayList<UserSession>();
@@ -212,10 +174,6 @@ public abstract class EventService  {
 		return ret;
 	}
 
-	private AtomicBoolean stopthread = new AtomicBoolean(false);
-	public void stopThreads() {
-		stopthread.set(true);
-	}
 
 	public void calculate() {
 
@@ -230,10 +188,20 @@ public abstract class EventService  {
 			int slotpos = currentpos.get() - timeframe.getDelay();
 
 			ResultSlot slot=null;
-			if(!resultslots.containsKey(slotpos)) {
+			if(timeframe.getDelay()==0) {
+
 				slot = newResultSlot();
 				slot.currentpos = currentpos.get();
+
 			} else {
+				if(!resultslots.containsKey(slotpos)) {
+					slot = storage.getSlot(eventid, slotpos);
+					if(slot==null) {
+						slot = newResultSlot();
+						slot.currentpos = currentpos.get();
+					}
+					resultslots.put(slot.currentpos,slot);
+				}
 				slot = resultslots.get(slotpos);
 			}
 			for(UserSession user:timeframe.getUserSessions()) {
@@ -241,14 +209,23 @@ public abstract class EventService  {
 					executeResponse(user, slot, (int) ((System.currentTimeMillis() - starttime)));
 				}
 			}
-			executeResult(slot);
-			if(slot.isresult) {
-				resultslots.put(slot.currentpos, slot);
-				timeframe.setResultslot(slot);
-			}
 
 			executeSlotEnd(slot);
+			if(send_status.decrementAndGet()<=0) {
 
+				if(slot.feedback!=null) {
+					((FeedBackSlot)slot.feedback).st=timeframe.getStatus();
+				}
+				send_status.set(10);
+			}
+
+			executeResult(slot);
+			resultslots.put(slot.currentpos, slot);
+
+			// adding slot to send to timeframe
+			timeframe.setResultslot(slot);
+			// adding to sending monitor
+			monitor.sendTimeFrame(timeframe);
 
 		}
 
@@ -263,9 +240,9 @@ public abstract class EventService  {
 	protected abstract void executeSlotStart(TimeFrame timeframe);
 	protected abstract void executeResponse(UserSession usersession,ResultSlot slot, int time);
 	protected abstract void executeSlotEnd(ResultSlot slot);
-
 	protected abstract void executeResult(ResultSlot slot);
-
 	protected abstract ResultSlot newResultSlot();
+	protected abstract void initTeam(Team team);
+
 
 }

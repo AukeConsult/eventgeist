@@ -7,6 +7,10 @@ import java.util.Map;
 
 public class EventInfo {
 
+	private String id;
+	public String getId() {return id;}
+	public void setId(String id) {this.id = id;}
+
 	private String eventid;
 	public String getEventid() {return eventid;}
 	public void setEventid(String eventid) {this.eventid = eventid;}
@@ -35,13 +39,9 @@ public class EventInfo {
 	public int getTimeslot_period() {return timeslot_period;}
 	public void setTimeslot_period(int timeslot_period) {this.timeslot_period = timeslot_period;}
 
-	public int avg1time;
+	public int avg1time=1000*15;
 	public int getAvg1time() {return avg1time;}
 	public void setAvg1time(int avg1time) {this.avg1time = avg1time;}
-
-	public int avg2time;
-	public int getAvg2time() {return avg2time;}
-	public void setAvg2time(int avg2time) {this.avg2time = avg2time;}
 
 	private Map<String, Team> teams = new HashMap<String,Team>();
 	public Map<String, Team> getTeams() {return teams;}
@@ -59,5 +59,15 @@ public class EventInfo {
 	private Map<String, Object> props;
 	public Map<String, Object> getProps() {return props;}
 	public void setProps(Map<String, Object> props) {this.props = props;}
+
+	// constr
+	public EventInfo(String eventid) {
+		this.eventid=eventid;
+	}
+	public Team createTeam(String teamid) {
+		Team team = new Team(teamid);
+		teams.put(teamid, team);
+		return team;
+	}
 
 }

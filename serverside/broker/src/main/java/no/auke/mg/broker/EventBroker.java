@@ -6,22 +6,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.Session;
 
-import no.auke.mg.event.EventMonitor;
 import no.auke.mg.event.EventService;
-import no.auke.mg.event.TimeFrame;
+import no.auke.mg.event.Storage;
 import no.auke.mg.event.UserSession;
-import no.auke.mg.event.basic.BasicEvent;
 import no.auke.mg.event.dao.EventDao;
-import no.auke.mg.event.football.FootballEvent;
+import no.auke.mg.event.impl.FileSysStorage;
 import no.auke.mg.event.models.EventInfo;
+import no.auke.mg.eventimpl.basic.BasicEvent;
+import no.auke.mg.eventimpl.football.FootballEvent;
 
-public class EventBroker implements Runnable {
+public class EventBroker {
 
 	private static EventBroker instance;
 
 	private static Map<String, EventService> events = new ConcurrentHashMap<String, EventService>();
-
-	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 	private static Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 
 	private static int timeslot_period_default=2000;
@@ -35,7 +33,8 @@ public class EventBroker implements Runnable {
 		return eventdao;
 	}
 
-	public static EventMonitor monitor;
+	public static WsMonitor monitor;
+	public static Storage storage;
 
 	private EventBroker() {}
 
@@ -49,23 +48,21 @@ public class EventBroker implements Runnable {
 
 				// get eventifo
 
-				EventInfo info = new EventInfo();
+				EventInfo info = new EventInfo(eventid.trim());
 				info.setEventid(eventid.trim());
 				info.setType(eventtype.trim());
 				info.setTimeslot_period(timeslot_period_default);
 
 				// check what type of event
 				if(info.equals("football")) {
-
-					events.put(info.getEventid(), new FootballEvent(info, monitor));
-
+					events.put(info.getEventid(), new FootballEvent(info, monitor,storage));
 				} else {
-					events.put(info.getEventid(), new BasicEvent(info, monitor));
+					events.put(info.getEventid(), new BasicEvent(info, monitor,storage));
 				}
-				// read event info
 
+				// read event info
 				// initialize and start event
-				events.get(info.getEventid()).init(EventBroker.reportDir);
+				events.get(info.getEventid()).init();
 
 
 			}
@@ -75,7 +72,6 @@ public class EventBroker implements Runnable {
 			UserSession usersession = new UserSession(session.getId(), event, userid.trim(), support.trim(), position.trim(),0);
 			event.addUser(usersession);
 
-			sessions.put(session.getId(), session);
 			usersessions.put(session.getId(), usersession);
 
 		} catch (Exception ex) {
@@ -92,9 +88,8 @@ public class EventBroker implements Runnable {
 	}
 
 	public static void closeSession(Session session) {
-		if(sessions.containsKey(session.getId())) {
+		if(usersessions.containsKey(session.getId())) {
 			usersessions.get(session.getId()).close();
-			sessions.remove(session.getId());
 			usersessions.remove(session.getId());
 		}
 	}
@@ -109,56 +104,11 @@ public class EventBroker implements Runnable {
 
 			//reportDir = System.getProperty("user.dir") + "/events/";
 			instance = new EventBroker();
-			monitor = new EventMonitor();
-
-			new Thread(instance).start();
-		}
-
-	}
-
-	@Override
-	public void run() {
-
-		while (true) {
-
-			try {
-
-				Thread.sleep(100);
-				//System.out.println("do push size clients " + sessions.size());
-
-				for(EventService event:events.values()) {
-
-					//System.out.println("event " + event.getEventid());
-					//System.out.println("push event");
-
-					for(TimeFrame frame:event.getTimeframes()) {
-
-						String frameresult = frame.readResults();
-						if(frameresult!=null) {
-
-							for(UserSession usersession:frame.getUserSessions()) {
-
-								System.out.println("push user:" + usersession.getUserid() + ":" + usersession.getUserid() + ":" + frameresult);
-								if (usersession.isOpen()) {
-									sessions.get(usersession.getId()).getBasicRemote().sendText(frameresult);
-								} else {
-									//TODO add logging
-									System.out.println("close " + usersession.getId());
-									sessions.remove(usersession.getId());
-									usersessions.remove(usersession.getId());
-									frame.closeSession(usersession);
-								}
-							}
-						}
-					}
-				}
-
-			} catch (InterruptedException e) {
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			monitor = new WsMonitor();
+			storage = new FileSysStorage(reportDir);
 
 		}
 
 	}
+
 }

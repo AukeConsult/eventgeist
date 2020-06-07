@@ -5,11 +5,11 @@ import java.util.List;
 
 import no.auke.mg.event.models.Message;
 
-public class MessageService {
+public class Messages {
 
 	private EventService event;
 	private List<Message> msglist = new ArrayList<Message>();
-	public MessageService(EventService event) {
+	public Messages(EventService event) {
 		this.event=event;
 	}
 	public int lastMsgid(int delay) {return msglist.size() - 1;}

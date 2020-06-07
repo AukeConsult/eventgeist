@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+import no.auke.mg.event.feedbacks.FeedBack;
+
 public class UserSession {
 
 	private EventService event;
 
 	private String sessionid;
 	private String userid;
-	private String support;
+	private String team;
 	private String position;
 
 	private int delay;
@@ -21,7 +23,7 @@ public class UserSession {
 	private AtomicBoolean hasresult = new AtomicBoolean(false);
 
 	public String getUserid() {return userid!=null?userid:"";}
-	public String getSupport() {return support;}
+	public String getTeam() {return team;}
 	public String getPosition() {return position!=null?position:"";}
 
 
@@ -35,12 +37,21 @@ public class UserSession {
 
 		event.hit();
 		// check commands
-		if(response.startsWith("SI#")) {
+		if(response.startsWith("GI#")) {
 			// set eventinfo
 
+		} else if (response.startsWith("GH#")) {
+			// set status
 
-		} else if (response.startsWith("GI#")) {
+		} else if (response.startsWith("GS#")) {
+			// set status
 
+		} else if (response.startsWith("SETST#")) {
+
+			String[] func = response.split("\\#");
+			if(func.length>=3) {
+				event.setStatus(func[1],func[2],delay);
+			}
 
 		} else {
 			responses.add(response);
@@ -54,32 +65,23 @@ public class UserSession {
 		return ret_rep;
 	}
 
-	public UserSession(String sessionid, EventService event, String userid, String support, String position, int delay) {
+	public UserSession(String sessionid, EventService event, String userid, String team, String position, int delay) {
 		this.sessionid=sessionid;
 		this.event=event;
 		this.userid=userid;
-		this.support=support;
+		this.team=team;
 		this.position=position;
 		this.delay=delay;
 	}
 
-	public boolean hasResult() {
-		return hasresult.getAndSet(false);
-	}
-
-	public void setResponse(String response) {
-		hasresult.set(true);
-	}
-
+	public boolean hasResult() {return hasresult.getAndSet(false);}
+	public void setResponse(String response) {hasresult.set(true);}
 	public EventService getEvent() {return event;}
 
 	public int getDelay() {return delay;}
 	public String getId() {return sessionid;}
 
-	public void close() {
-		open.set(false);
-	}
-
+	public void close() {open.set(false);}
 
 	private ReentrantLock lock = new ReentrantLock();
 	private List<FeedBack> results = new ArrayList<FeedBack>();

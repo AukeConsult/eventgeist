@@ -1,16 +1,18 @@
-package no.auke.mg.event.basic;
+package no.auke.mg.eventimpl.basic;
 
-import no.auke.mg.event.EventMonitor;
 import no.auke.mg.event.EventService;
-import no.auke.mg.event.ResultSlot;
+import no.auke.mg.event.Monitor;
+import no.auke.mg.event.Storage;
 import no.auke.mg.event.TimeFrame;
 import no.auke.mg.event.UserSession;
 import no.auke.mg.event.models.EventInfo;
+import no.auke.mg.event.models.ResultSlot;
+import no.auke.mg.event.models.Team;
 
 public class BasicEvent extends EventService {
 
-	public BasicEvent(EventInfo eventinfo, EventMonitor monitor) {
-		super(eventinfo, monitor);
+	public BasicEvent(EventInfo eventinfo, Monitor monitor,Storage storage) {
+		super(eventinfo, monitor,storage);
 	}
 
 	private String makeQ(String value) {
@@ -35,6 +37,12 @@ public class BasicEvent extends EventService {
 
 	@Override
 	protected void executeSlotStart(TimeFrame timeframe) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void initTeam(Team team) {
 		// TODO Auto-generated method stub
 
 	}
