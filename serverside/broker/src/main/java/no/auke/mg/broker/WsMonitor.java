@@ -11,9 +11,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import no.auke.mg.event.Monitor;
 import no.auke.mg.event.TimeFrame;
 import no.auke.mg.event.UserSession;
+import no.auke.mg.event.feedbacks.FeedBack;
+import no.auke.mg.services.Monitor;
 
 public class WsMonitor extends Monitor {
 
@@ -81,16 +82,18 @@ public class WsMonitor extends Monitor {
 						}
 					}
 
-					// send to user after a command
-					// TODO: not finish
-					//while(!send_users.isEmpty()) {
-					//	UserSession usersession = send_users.poll();
-					//	if(usersession!=null) {
-					//		String frameresult = objectMapper.writeValueAsString(frame.readResults());
-					//		String frameresult = usersession.readResults().get(0);
-					//		sendSession(usersession, frameresult);
-					//	}
-					//}
+					while(!send_users.isEmpty()) {
+						UserSession usersession = send_users.poll();
+						if(usersession!=null && usersession.readResults() !=null && usersession.readResults().size()>0) {
+							try {
+								for(FeedBack result:usersession.readResults()) {
+									sendSession(usersession, objectMapper.writeValueAsString(result));
+								}
+							} catch (JsonProcessingException e) {
+								e.printStackTrace();
+							}
+						}
+					}
 
 					try {
 						Thread.sleep(100);

@@ -1,4 +1,4 @@
-package no.auke.mg.event;
+package no.auke.mg.services;
 
 import java.util.Calendar;
 import java.util.List;
@@ -7,9 +7,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import no.auke.mg.event.ResultSlot;
 import no.auke.mg.event.models.EventInfo;
 import no.auke.mg.event.models.EventStatus;
-import no.auke.mg.event.models.ResultSlot;
 import no.auke.mg.event.models.Team;
 
 public abstract class Storage {

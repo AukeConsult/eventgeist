@@ -1,9 +1,20 @@
 package no.auke.mg.event.models;
 
 public class Status {
-	public Status() {}
-	public Status(Object val) {this.val=val;}
-	private Object val;
-	public Object getVal() {return val;}
-	public void setVal(String val) {this.val = val;}
+
+	private String t;
+	public String getT() {return t;}
+
+	private String uid;
+	public String getUid() {return uid;}
+
+	private String js;
+	public String getJs() {return js;}
+
+	public Status(String type, String userid, String js) {
+		this.t=type;
+		this.uid=userid;
+		this.js = js;
+	}
+
 }

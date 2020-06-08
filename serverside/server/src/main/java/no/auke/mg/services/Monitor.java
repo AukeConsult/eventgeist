@@ -1,12 +1,18 @@
-package no.auke.mg.event;
+package no.auke.mg.services;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import no.auke.mg.event.TimeFrame;
+import no.auke.mg.event.UserSession;
+
 public abstract class Monitor {
 
 	protected Queue<TimeFrame> send_frames = new ConcurrentLinkedQueue<TimeFrame>();
+	public Queue<TimeFrame> getSend_frames() {return send_frames;}
+
 	protected Queue<UserSession> send_users = new ConcurrentLinkedQueue<UserSession>();
+	public Queue<UserSession> getSend_users() {return send_users;}
 
 	public Monitor() {}
 

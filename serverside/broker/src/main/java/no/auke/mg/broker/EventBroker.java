@@ -12,7 +12,6 @@ import no.auke.mg.event.UserSession;
 import no.auke.mg.event.dao.EventDao;
 import no.auke.mg.event.impl.FileSysStorage;
 import no.auke.mg.event.models.EventInfo;
-import no.auke.mg.eventimpl.basic.BasicEvent;
 import no.auke.mg.eventimpl.football.FootballEvent;
 
 public class EventBroker {
@@ -56,8 +55,6 @@ public class EventBroker {
 				// check what type of event
 				if(info.equals("football")) {
 					events.put(info.getEventid(), new FootballEvent(info, monitor,storage));
-				} else {
-					events.put(info.getEventid(), new BasicEvent(info, monitor,storage));
 				}
 
 				// read event info

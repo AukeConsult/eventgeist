@@ -32,7 +32,9 @@ public class UserSession {
 	}
 
 	private List<String> responses = Collections.synchronizedList(new ArrayList<String>());
+
 	public int getNumResponses() {return responses.size();}
+
 	public void addResponse(String response) {
 
 		event.hit();
@@ -45,13 +47,6 @@ public class UserSession {
 
 		} else if (response.startsWith("GS#")) {
 			// set status
-
-		} else if (response.startsWith("SETST#")) {
-
-			String[] func = response.split("\\#");
-			if(func.length>=3) {
-				event.setStatus(func[1],func[2],delay);
-			}
 
 		} else {
 			responses.add(response);
@@ -95,21 +90,17 @@ public class UserSession {
 		}
 	}
 
-	public List<String> readResults() {
+	public List<FeedBack> readResults() {
 		try {
 			lock.lock();
 			if(results.size()>0) {
-
-				List<String> ret = new ArrayList<String>();
+				List<FeedBack> ret = new ArrayList<FeedBack>(results);
 				return ret;
-
 			} else {
 				return null;
 			}
 		} finally {
-			if(results.size()>0) {
-				results.clear();
-			}
+			results.clear();
 			lock.unlock();
 		}
 	}

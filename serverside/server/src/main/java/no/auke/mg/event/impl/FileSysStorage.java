@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import no.auke.mg.event.Storage;
+import no.auke.mg.event.ResultSlot;
 import no.auke.mg.event.models.EventInfo;
-import no.auke.mg.event.models.ResultSlot;
+import no.auke.mg.services.Storage;
 
 public class FileSysStorage extends Storage {
 

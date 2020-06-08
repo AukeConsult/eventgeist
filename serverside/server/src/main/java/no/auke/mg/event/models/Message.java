@@ -2,30 +2,27 @@ package no.auke.mg.event.models;
 
 public class Message {
 
-	private String eventid;
-	public String getEventid() {return eventid;}
+	private String t;
+	public String getT() {return t;}
 
-	private String userid;
-	public String getUsertid() {return userid;}
+	private String uid;
+	public String getUid() {return uid;}
 
-	private int msgid;
-	public int getMsgid() {return msgid;}
+	private int id;
+	public int getId() {return id;}
 
-	private int slotpos;
-	public int getSlotpos() {return slotpos;}
+	private int dl;
+	public int getDl() {return dl;}
 
-	private int delay;
-	public int getDelay() {return delay;}
+	private String js;
+	public String getJs() {return js;}
 
-	private String text;
-	public String getText() {return text;}
-
-	public Message(String eventid, String userid, int msgid, int slotpos, int delay, String text) {
-		this.eventid=eventid;
-		this.userid=userid;
-		this.msgid=msgid;
-		this.slotpos=slotpos;
-		this.delay=delay;
-		this.text = text;
+	public Message(String type, String userid, int id, int delay, String js) {
+		this.t=type;
+		this.uid=userid;
+		this.id=id;
+		this.dl=delay;
+		this.js = js;
 	}
+
 }

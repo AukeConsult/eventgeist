@@ -11,9 +11,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import no.auke.mg.event.feedbacks.FeedBackSlot;
 import no.auke.mg.event.models.EventInfo;
 import no.auke.mg.event.models.EventStatus;
-import no.auke.mg.event.models.ResultSlot;
 import no.auke.mg.event.models.Status;
 import no.auke.mg.event.models.Team;
+import no.auke.mg.services.Monitor;
+import no.auke.mg.services.Storage;
 
 
 public abstract class EventService  {
@@ -44,9 +45,6 @@ public abstract class EventService  {
 	public EventInfo 		getEventinfo() {return eventinfo;}
 	public void 			setEventinfo(EventInfo eventinfo) {this.eventinfo = eventinfo;}
 
-	private Messages 		messages;
-	public Messages 		getMessages() {return messages;}
-
 	// services
 	private Monitor 		monitor;
 	public Monitor 			getMonitor() {return monitor;}
@@ -60,13 +58,11 @@ public abstract class EventService  {
 	public EventService(EventInfo eventinfo, Monitor monitor, Storage storage) {
 
 		this.eventid=eventinfo.getEventid();
-		this.messages = new Messages(this);
 
 		this.timeslot_period=eventinfo.getTimeslot_period();
 		this.eventinfo = eventinfo;
 		this.monitor=monitor;
 		this.storage=storage;
-
 
 	}
 
@@ -154,17 +150,6 @@ public abstract class EventService  {
 
 	}
 
-	AtomicInteger send_status = new AtomicInteger();
-	public void setStatus(String type, String json, int delay) {
-		if(timeframes.containsKey(delay)) {
-			if(!timeframes.get(delay).getStatus().containsKey(type)) {
-				timeframes.get(delay).getStatus().put(type,new Status());
-			}
-			timeframes.get(delay).getStatus().get(type).setVal(json);
-			send_status.set(0);
-		}
-	}
-
 
 	public List<UserSession> getUserSessions() {
 		List<UserSession> ret = new ArrayList<UserSession>();
@@ -174,7 +159,8 @@ public abstract class EventService  {
 		return ret;
 	}
 
-
+	private int cnt_empty=0;
+	private int send_status=0;
 	public void calculate() {
 
 		// hart pulze timer
@@ -182,8 +168,6 @@ public abstract class EventService  {
 		//
 
 		for(TimeFrame timeframe:timeframes.values()) {
-
-			executeSlotStart(timeframe);
 
 			int slotpos = currentpos.get() - timeframe.getDelay();
 
@@ -194,32 +178,83 @@ public abstract class EventService  {
 				slot.currentpos = currentpos.get();
 
 			} else {
+
 				if(!resultslots.containsKey(slotpos)) {
+
 					slot = storage.getSlot(eventid, slotpos);
+
 					if(slot==null) {
 						slot = newResultSlot();
 						slot.currentpos = currentpos.get();
 					}
 					resultslots.put(slot.currentpos,slot);
 				}
+
 				slot = resultslots.get(slotpos);
 			}
+
+			executeSlotStart(slot);
+
 			for(UserSession user:timeframe.getUserSessions()) {
 				if(user.isOpen()) {
-					executeResponse(user, slot, (int) ((System.currentTimeMillis() - starttime)));
+
+					executeSlotUser(user, slot);
+
+					// NB only read once for each timeslot
+					for(String response:user.readResponses()) {
+						if(response.startsWith("C#")) {
+							executeSlotResponse(response,user,slot);
+						} else if (response.startsWith("M#")) {
+							String[] func = response.split("\\#");
+							if(func.length>=2) {
+								if(func[2]!=null && func[2].length()>0) {
+									slot.addMessage(func[1],user.getUserid(), user.getDelay(), func[2]);
+								}
+							} else if(func.length>=1) {
+								if(func[1]!=null && func[1].length()>0) {
+									slot.addMessage(null,user.getUserid(), user.getDelay(), func[1]);
+								}
+							}
+						} else if (response.startsWith("ST#")) {
+							if(timeframe.getDelay()==0) {
+								String[] func = response.split("\\#");
+								if(func.length>=3) {
+									Status st = slot.addStatus(func[1], user.getUserid(), func[2]);
+									timeframe.getStatus().put(st.getT(), st);
+								}
+							}
+						}
+					}
+
 				}
 			}
 
-			executeSlotEnd(slot);
-			if(send_status.decrementAndGet()<=0) {
-
-				if(slot.feedback!=null) {
-					((FeedBackSlot)slot.feedback).st=timeframe.getStatus();
-				}
-				send_status.set(10);
+			if(slot.msglist.size()>0) {
+				slot.isresult=true;
+				((FeedBackSlot)slot.feedback).msg=slot.msglist;
 			}
 
-			executeResult(slot);
+			send_status--;
+			if(send_status<=0) {
+				if(timeframe.getStatus().size()>0) {
+					slot.isresult=true;
+					((FeedBackSlot)slot.feedback).st=new ArrayList<Status>(timeframe.getStatus().values());
+				}
+				send_status=9;
+			}
+
+			executeSlotEnd(slot, (int) ((System.currentTimeMillis() - starttime)));
+
+			if(!slot.isresult) {
+				if(cnt_empty>2) {
+					slot.feedback=null;
+				} else {
+					cnt_empty++;
+				}
+			} else {
+				cnt_empty=0;
+			}
+
 			resultslots.put(slot.currentpos, slot);
 
 			// adding slot to send to timeframe
@@ -237,10 +272,11 @@ public abstract class EventService  {
 		}
 	}
 
-	protected abstract void executeSlotStart(TimeFrame timeframe);
-	protected abstract void executeResponse(UserSession usersession,ResultSlot slot, int time);
-	protected abstract void executeSlotEnd(ResultSlot slot);
-	protected abstract void executeResult(ResultSlot slot);
+	protected abstract void executeSlotStart(ResultSlot slot);
+	protected abstract void executeSlotUser(UserSession user, ResultSlot slot);
+	protected abstract void executeSlotResponse(String response, UserSession user, ResultSlot slot);
+	protected abstract void executeSlotEnd(ResultSlot slot, int time);
+
 	protected abstract ResultSlot newResultSlot();
 	protected abstract void initTeam(Team team);
 

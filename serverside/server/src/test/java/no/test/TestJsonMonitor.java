@@ -6,9 +6,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import no.auke.mg.event.Monitor;
 import no.auke.mg.event.TimeFrame;
 import no.auke.mg.event.UserSession;
+import no.auke.mg.event.feedbacks.FeedBack;
+import no.auke.mg.services.Monitor;
 
 public class TestJsonMonitor extends Monitor {
 
@@ -61,8 +62,9 @@ public class TestJsonMonitor extends Monitor {
 						UserSession usersession = send_users.poll();
 						if(usersession!=null && usersession.readResults() !=null && usersession.readResults().size()>0) {
 							try {
-								String frameresult = objectMapper.writeValueAsString(usersession.readResults());
-								sendSession(usersession, frameresult);
+								for(FeedBack result:usersession.readResults()) {
+									sendSession(usersession, objectMapper.writeValueAsString(result));
+								}
 							} catch (JsonProcessingException e) {
 								e.printStackTrace();
 							}
