@@ -18,7 +18,7 @@ public class TestMonitor extends Monitor {
 			TimeFrame frame = send_frames.poll();
 			if(frame!=null) {
 				try {
-					Object feedback = frame.readResults().feedback;
+					Object feedback = frame.readFeedBack();
 					if(feedback!=null) {
 						System.out.println(objectMapper.writeValueAsString(feedback));
 					}

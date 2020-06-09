@@ -20,7 +20,7 @@ public abstract class Storage {
 	protected Map<String,ChannelStatus> channelstatuses = new ConcurrentHashMap<String,ChannelStatus>();
 
 	protected Queue<ChannelInfo> save_channels = new ConcurrentLinkedQueue<ChannelInfo>();
-	protected Queue<ChannelStatus> save_eventstatuses = new ConcurrentLinkedQueue<ChannelStatus>();
+	protected Queue<ChannelStatus> save_channelstatuses = new ConcurrentLinkedQueue<ChannelStatus>();
 	protected Queue<ResultSlot> save_slots = new ConcurrentLinkedQueue<ResultSlot>();
 	protected Map<String,Map<Long,ResultSlot>> slots = new HashMap<String,Map<Long,ResultSlot>>();
 
@@ -66,7 +66,7 @@ public abstract class Storage {
 
 	public void saveChannelStatus(ChannelStatus status) {
 		channelstatuses.put(status.getChannelid(), status);
-		save_eventstatuses.add(status);
+		save_channelstatuses.add(status);
 	}
 
 	public void saveSlot(ResultSlot slot) {
@@ -80,6 +80,9 @@ public abstract class Storage {
 		}
 	}
 	public ResultSlot getSlot(String channelid, long slotpos) {
+		if(!slots.containsValue(channelid)) {
+			slots.put(channelid, new HashMap<Long,ResultSlot>());
+		}
 		return slots.get(channelid).get(slotpos);
 	}
 
@@ -89,6 +92,10 @@ public abstract class Storage {
 	public abstract void readAll();
 	public abstract ChannelInfo readhannel(String channelid);
 	public abstract List<ResultSlot> readSlots(String channelid, int slotpos);
+
+	public void init() {
+		// TODO Auto-generated method stub
+	}
 
 
 }

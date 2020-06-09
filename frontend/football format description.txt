@@ -1,53 +1,71 @@
 Format description
 
-{	"evid":test3,	// unique idea for event
-	"t":"S",	// type transaction (S=snapshot timeline, I=eventinfo (ikke impl), H=history (Ikke impl)
-	"sp":34,	// slotpos	
-	"tm":2470,	// time in MS sinze event start
-	"st":null,	// Status objects (not ready)
-	"teams":{	// teamlist
-		
-		"team1": {		// team 1 data	
-			"num":5,	// number of supporters active
-			"hits":{	// total hits
-				"val":1.0,	// number of hits in period
-				"avg1":2.4,	// average hists last 10 seconds
-				"avg2":0.0	// average hists last minutes (ikke impl)
-				},
-			"btn":	{
-				"btn2":{	// data for button med navn btn2	
-					"val":0.0,	// number of hits in period for button
-					"avg1":0.8,	// average hists last 10 seconds for button
-					"avg2":0.0	// average hists last minutes (ikke impl) for button
-					},
-				"btn1":{	// data for button med navn btn2
-					"val":1.0,
-					"avg1":1.6,
-					"avg2":0.0}
-				}
-			},
-		"team2":{		// team 2 data
-			"num":5,
-			"hits":{
-				"val":4.0,
-				"avg1":2.4,
-				"avg2":0.0
-			},
-			"btn":{
-				"btn2":{
-					"val":2.0,
-					"avg1":0.7,
-					"avg2":0.0
-					},
-				"btn1":{
-					"val":2.0,
-					"avg1":1.7,
-					"avg2":0.0
-					}
-				}
-			}
-		},
+{
+  "chid" : "test",  		// channelid
+  "evid" : "test",  		// eventid
+  "t" : "S",			// type transaksjon (Slot=S)
+  "sp" : 26,			// slotpos
+  "tm" : 26697,			// time (ms)
 
-	"messages":[]	// innkomne meldinger (ikke impl)
+  "st" : []			// status array (kommer senere men ulike type event statuser som sendes på nytt hvert 10 sekund)
 
+  "msg":[			// meldings array (eller null hvis ingen)
+
+	{"t":null,			// type melding (generell blank)
+	 "uid":"leif",			// sent av
+         "id":0,			// teller melding 0, første meldig (siden event startet
+         "dl":0,			// delay (ikke viktig nå)
+         "js":"tedde er meld"		// meldings innhold (kan vøre en json også)	
+	},
+
+	{"t":"kom",			// type melding (kommentar)
+	 "uid":"per",			// sent av
+         "id":1,			// teller melding 2, andre melding (siden event startet)
+         "dl":0,			// delay (ikke viktig nå)
+         "js":"kommentar fra per"	// meldings innhold (kan vøre en json også)	
+	}
+	
+	]
+
+  "teams" : [ {			// lag listes
+
+    "id" : "team1",		// Lag 1
+    "num" : 492,		// antall suportere
+    "hits" : [ {		// hits array
+      "id" : "tot",		// TOT er alltid totalt
+      "val" : 128.0,		// antall
+      "avg1" : 196.6,		// gjennomsnitt 1
+      "avg2" : 0.0		// gjennomsnitt 2
+    }, {
+      "id" : "btn1",		// Knapp 1 resultater
+      "val" : 101.0,
+      "avg1" : 152.2,
+      "avg2" : 0.0
+    }, {
+      "id" : "btn2",		// knapp 2 resultater
+      "val" : 27.0,
+      "avg1" : 44.4,
+      "avg2" : 0.0
+    } ]
+  }, {
+
+    "id" : "team2",		// lag2 
+    "num" : 508,
+    "hits" : [ {
+      "id" : "tot",
+      "val" : 144.0,
+      "avg1" : 201.0,
+      "avg2" : 0.0
+    }, {
+      "id" : "btn1",
+      "val" : 117.0,
+      "avg1" : 154.8,
+      "avg2" : 0.0
+    }, {
+      "id" : "btn2",
+      "val" : 27.0,
+      "avg1" : 46.2,
+      "avg2" : 0.0
+    } ]
+  } ]
 }

@@ -17,7 +17,7 @@ public class EventBroker {
 
 	private static EventBroker instance;
 
-	private static Map<String, ChannelService> events = new ConcurrentHashMap<String, ChannelService>();
+	private static Map<String, ChannelService> channels = new ConcurrentHashMap<String, ChannelService>();
 	private static Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 
 	private static int timeslot_period_default=2000;
@@ -28,37 +28,39 @@ public class EventBroker {
 
 	private EventBroker() {}
 
-	public static void addSession(Session session, String eventtype, String channelid, String userid, String support, String position) {
+	public static void addSession(Session session, String eventtype, String eventid, String userid, String support, String position) {
 
 		initialize();
 
 		try {
 
-			if(!events.containsKey(channelid.trim())) {
+			if(!channels.containsKey(eventid.trim())) {
 
 				// get eventifo
 
-				ChannelInfo info = new ChannelInfo(channelid.trim());
-				info.setChannelid(channelid.trim());
+				ChannelInfo info = new ChannelInfo(eventid.trim());
+				info.setChannelid(eventid.trim());
 				info.setType(eventtype.trim());
 				info.setTimeslot_period(timeslot_period_default);
 
 				// check what type of channel
 				if(info.equals("football")) {
-					events.put(info.getChannelid(), new FootballChannel(info, monitor,storage));
+					channels.put(info.getChannelid(), new FootballChannel(info, monitor,storage));
+				} else {
+					channels.put(info.getChannelid(), new FootballChannel(info, monitor,storage));
 				}
 
 				// read channel info
 				// initialize and start channel
-				events.get(info.getChannelid()).init();
-
+				channels.get(info.getChannelid()).init();
 
 			}
 
-			ChannelService channel = events.get(channelid.trim());
+			ChannelService channel = channels.get(eventid.trim());
 
 			UserSession usersession = new UserSession(session.getId(), channel, userid.trim(), support.trim(), position.trim(),0);
 			channel.addUser(usersession);
+			monitor.addSession(session);
 
 			usersessions.put(session.getId(), usersession);
 
@@ -93,7 +95,9 @@ public class EventBroker {
 			//reportDir = System.getProperty("user.dir") + "/channel/";
 			instance = new EventBroker();
 			monitor = new WsMonitor();
+			monitor.init();
 			storage = new FileSysStorage(reportDir);
+			storage.init();
 
 		}
 

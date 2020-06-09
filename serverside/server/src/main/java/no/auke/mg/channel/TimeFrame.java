@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import no.auke.mg.channel.feedbacks.FeedBack;
 import no.auke.mg.channel.models.Status;
 
 // all user session within the same time frame
@@ -47,19 +48,17 @@ public class TimeFrame {
 		}
 	}
 
-	public ResultSlot readResults() {
+	public FeedBack readFeedBack() {
 		try {
 			lock.lock();
 			if(resultslot!=null) {
-				return resultslot;
+				return resultslot.feedback;
 			} else {
 				return null;
 			}
 		} finally {
 			if(resultslot!=null) {
 				channelservice.getStorage().saveSlot(resultslot);
-			} else {
-
 			}
 			resultslot=null;
 			lock.unlock();

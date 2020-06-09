@@ -23,7 +23,7 @@ public class EventBrokerSocket {
 		EventBroker.addSession(
 				session,
 				params.get("eventtype") != null?params.get("eventtype").get(0).trim():"standard",
-						params.get("channel") != null?params.get("channel").get(0).trim():"TestServlet",
+						params.get("event") != null?params.get("event").get(0).trim():"tst",
 								params.get("user") != null?params.get("user").get(0).trim():session.getId(),
 										params.get("support") != null?params.get("support").get(0).trim():"",
 												params.get("position") != null?params.get("position").get(0).trim():""

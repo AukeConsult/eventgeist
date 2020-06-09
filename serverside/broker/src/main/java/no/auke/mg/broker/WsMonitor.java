@@ -14,6 +14,10 @@ public class WsMonitor extends JsonMonitor {
 
 	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 
+	public void addSession(Session session) {
+		sessions.put(session.getId(), session);
+	}
+
 	public WsMonitor() {}
 
 	@Override

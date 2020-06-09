@@ -24,6 +24,7 @@ public class FootballChannel extends ChannelService {
 		FootballFeedback res = new FootballFeedback();
 		res.sp=slot.pos;
 		res.chid=getChannelid();
+		res.evid=getEventid();
 		slot.feedback=res;
 
 	}
@@ -126,7 +127,7 @@ public class FootballChannel extends ChannelService {
 				Teamres total = total_res.teamwork.get(keyteaam);
 				Teamres res = current_res.teamwork.get(keyteaam);
 				res.totwork.avg1 = total.totwork.val / num_pos;
-				if(total.totwork.val>0) {
+				if(res.totwork.avg1>0) {
 					slot.isresult=true;
 				}
 

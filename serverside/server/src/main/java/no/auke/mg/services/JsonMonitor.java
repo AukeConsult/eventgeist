@@ -4,7 +4,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import no.auke.mg.channel.TimeFrame;
 import no.auke.mg.channel.UserSession;
@@ -22,7 +21,7 @@ public abstract class JsonMonitor extends Monitor {
 
 		// Make hart beat and calculate incoming responses pr. timeslot
 
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		//objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		new Thread(new Runnable() {
 
@@ -37,7 +36,7 @@ public abstract class JsonMonitor extends Monitor {
 						TimeFrame frame = send_frames.poll();
 						if(frame!=null) {
 							try {
-								FeedBack feeback = frame.readResults().feedback;
+								FeedBack feeback = frame.readFeedBack();
 								if(feeback!=null) {
 									String frameresult = objectMapper.writeValueAsString(feeback);
 									sendTimeFrame(frame,frameresult);
@@ -66,7 +65,7 @@ public abstract class JsonMonitor extends Monitor {
 					}
 
 					try {
-						Thread.sleep(100);
+						Thread.sleep(1000);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

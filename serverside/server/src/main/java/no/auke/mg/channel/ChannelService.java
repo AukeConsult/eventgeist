@@ -22,6 +22,10 @@ public abstract class ChannelService  {
 	private String channelid;
 	public String getChannelid() {return channelid;}
 
+	private String eventid;
+	public String getEventid() {return eventid;}
+	public void setEventid(String eventid) {this.eventid = eventid;}
+
 	private long starttime;
 	public long getStarttime() {return starttime;}
 
@@ -54,6 +58,7 @@ public abstract class ChannelService  {
 	public ChannelService(ChannelInfo channelinfo, Monitor monitor, Storage storage) {
 
 		this.channelid=channelinfo.getChannelid();
+		this.eventid=channelinfo.getChannelid();
 
 		this.timeslot_period=channelinfo.getTimeslot_period();
 		this.channelinfo = channelinfo;
@@ -69,6 +74,7 @@ public abstract class ChannelService  {
 	public void persist() {
 
 		ChannelStatus status = new ChannelStatus();
+		status.setChannelid(channelid);
 		status.setEventid(channelid);
 		status.setCurrentpos(currentpos.get());
 		status.setStarttime(starttime);
@@ -121,10 +127,22 @@ public abstract class ChannelService  {
 			@Override
 			public void run() {
 				// calculating results
+
+				long start=System.currentTimeMillis();
+				long period = timeslot_period;
 				while (!stopthread.get()) {
 					try {
-						Thread.sleep(timeslot_period);
+
+						//System.out.println("calculate " + period);
 						calculate();
+						start = start + period;
+						long wait = start - System.currentTimeMillis();
+						//System.out.println("wait " + wait);
+
+						if(wait>0) {
+							Thread.sleep(wait);
+						}
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -145,7 +163,6 @@ public abstract class ChannelService  {
 		timeframes.get(session.getDelay()).addUser(session);
 
 	}
-
 
 	public List<UserSession> getUserSessions() {
 		List<UserSession> ret = new ArrayList<UserSession>();
@@ -178,6 +195,7 @@ public abstract class ChannelService  {
 			executeSlotStart(slot);
 
 			for(UserSession user:timeframe.getUserSessions()) {
+
 				if(user.isOpen()) {
 
 					executeSlotUser(user, slot);
@@ -188,11 +206,11 @@ public abstract class ChannelService  {
 							executeSlotResponse(response,user,slot);
 						} else if (response.startsWith("M#")) {
 							String[] func = response.split("\\#");
-							if(func.length>=2) {
+							if(func.length==3) {
 								if(func[2]!=null && func[2].length()>0) {
 									slot.addMessage(func[1],user.getUserid(), user.getDelay(), func[2]);
 								}
-							} else if(func.length>=1) {
+							} else if(func.length==2) {
 								if(func[1]!=null && func[1].length()>0) {
 									slot.addMessage(null,user.getUserid(), user.getDelay(), func[1]);
 								}
@@ -249,7 +267,7 @@ public abstract class ChannelService  {
 
 	public void emptyResults() {
 		for(TimeFrame timeframe:timeframes.values()) {
-			timeframe.readResults();
+			timeframe.readFeedBack();
 		}
 	}
 

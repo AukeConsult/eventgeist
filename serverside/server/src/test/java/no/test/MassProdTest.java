@@ -80,9 +80,9 @@ public class MassProdTest {
 		AtomicInteger cnt= new AtomicInteger(0);
 		AtomicBoolean closed = new AtomicBoolean(false);
 
-		public userThread(ChannelService event, String userid) {
-			usersession = new UserSession(userid, event, userid, (rnd.nextInt()>0?"team1":"team2"), "", 0);
-			event.addUser(usersession);
+		public userThread(ChannelService channel, String userid) {
+			usersession = new UserSession(userid, channel, userid, (rnd.nextInt()>0?"team1":"team2"), "", 0);
+			channel.addUser(usersession);
 			new Thread(this).start();
 		}
 
@@ -93,11 +93,11 @@ public class MassProdTest {
 				try {
 					Thread.sleep(50 + rnd.nextInt(2000));
 					if(rnd.nextInt(3)==0) {
-						usersession.addResponse("C#0");
+						usersession.addResponse("C#btn1");
 						cnt.incrementAndGet();
 					}
 					if(rnd.nextInt(10)==0) {
-						usersession.addResponse("C#1");
+						usersession.addResponse("C#btn2");
 						cnt.incrementAndGet();
 					}
 				} catch (InterruptedException e) {
@@ -117,36 +117,39 @@ public class MassProdTest {
 
 		int num_usersessions=1000;
 
-		final int calctime =2000;
-		Long time = System.currentTimeMillis();
-		new Thread(new Runnable() {
+		channel.getMonitor().init();
 
-			int cnt=0;
-			@Override
-			public void run() {
-				int nextwait = calctime;
-				while(!closed.get()) {
-					try {
 
-						if(nextwait>0) {
-							Thread.sleep(nextwait);
-						}
-
-						System.out.println("calculate " + String.valueOf(System.currentTimeMillis() - time));
-						Long startcalc = System.currentTimeMillis();
-
-						channel.calculate();
-						nextwait = (int) (calctime - (System.currentTimeMillis() - startcalc));
-						System.out.println("calculate time " + String.valueOf(System.currentTimeMillis() - startcalc));
-
-						cnt++;
-					} catch (InterruptedException e) {
-					} catch (Exception e) {
-						System.out.println(e.getMessage());
-					}
-				}
-
-			}}).start();
+		//		final int calctime = 2000;
+		//		Long time = System.currentTimeMillis();
+		//		new Thread(new Runnable() {
+		//
+		//			int cnt=0;
+		//			@Override
+		//			public void run() {
+		//				int nextwait = calctime;
+		//				while(!closed.get()) {
+		//					try {
+		//
+		//						if(nextwait>0) {
+		//							Thread.sleep(nextwait);
+		//						}
+		//
+		//						System.out.println("calculate " + String.valueOf(System.currentTimeMillis() - time));
+		//						Long startcalc = System.currentTimeMillis();
+		//
+		//						channel.calculate();
+		//						nextwait = (int) (calctime - (System.currentTimeMillis() - startcalc));
+		//						System.out.println("calculate time " + String.valueOf(System.currentTimeMillis() - startcalc));
+		//
+		//						cnt++;
+		//					} catch (InterruptedException e) {
+		//					} catch (Exception e) {
+		//						System.out.println(e.getMessage());
+		//					}
+		//				}
+		//
+		//			}}).start();
 
 
 		List<userThread> workers = new ArrayList<userThread>();
