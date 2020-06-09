@@ -1,15 +1,15 @@
-package no.auke.mg.event.feedbacks;
+package no.auke.mg.channel.feedbacks;
 
 import java.util.List;
 
-import no.auke.mg.event.models.Message;
-import no.auke.mg.event.models.Status;
+import no.auke.mg.channel.models.Message;
+import no.auke.mg.channel.models.Status;
 
 public class FeedBackSlot extends FeedBack {
 
 	public FeedBackSlot(String t) {this.t=t;}
-	public int sp=0;
-	public int tm=0;
+	public long sp=0;
+	public long tm=0;
 	public List<Status> st;
 	public List<Message> msg;
 

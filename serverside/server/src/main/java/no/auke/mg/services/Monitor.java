@@ -3,8 +3,8 @@ package no.auke.mg.services;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import no.auke.mg.event.TimeFrame;
-import no.auke.mg.event.UserSession;
+import no.auke.mg.channel.TimeFrame;
+import no.auke.mg.channel.UserSession;
 
 public abstract class Monitor {
 

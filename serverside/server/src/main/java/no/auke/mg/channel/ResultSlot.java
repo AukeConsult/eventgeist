@@ -1,22 +1,21 @@
-// result for each timeslot of event
-package no.auke.mg.event;
+// result for each timeslot of channel
+package no.auke.mg.channel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import no.auke.mg.event.feedbacks.FeedBack;
-import no.auke.mg.event.models.Message;
-import no.auke.mg.event.models.Status;
+import no.auke.mg.channel.feedbacks.FeedBack;
+import no.auke.mg.channel.models.Message;
+import no.auke.mg.channel.models.Status;
 
 public class ResultSlot {
 
 	public ResultSlot() {}
-	public int currentpos;
+
+	public String channelid;
+	public long pos;
 	public long currenttime = System.currentTimeMillis();
 	public boolean isresult=false;
-
-	//public Map<String, Integer> hits = new HashMap<String, Integer>();
-
 	public FeedBack feedback;
 
 	public List<Message> msglist = new ArrayList<Message>();

@@ -1,4 +1,4 @@
-package no.auke.mg.eventimpl.football;
+package no.auke.mg.channelimpl.football;
 
 public class Measure {
 	public Measure(String id) {this.id=id;}

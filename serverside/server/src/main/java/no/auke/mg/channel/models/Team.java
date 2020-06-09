@@ -1,4 +1,4 @@
-package no.auke.mg.event.models;
+package no.auke.mg.channel.models;
 
 import java.util.Map;
 

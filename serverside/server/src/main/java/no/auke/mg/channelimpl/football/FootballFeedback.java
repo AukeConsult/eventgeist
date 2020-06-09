@@ -1,4 +1,4 @@
-package no.auke.mg.eventimpl.football;
+package no.auke.mg.channelimpl.football;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import no.auke.mg.event.feedbacks.FeedBackSlot;
+import no.auke.mg.channel.feedbacks.FeedBackSlot;
 
 public class FootballFeedback extends FeedBackSlot {
 

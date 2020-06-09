@@ -1,4 +1,4 @@
-package no.auke.mg.event.models;
+package no.auke.mg.channel.models;
 
 public class Message {
 

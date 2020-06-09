@@ -1,4 +1,4 @@
-package no.auke.mg.event;
+package no.auke.mg.channel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import no.auke.mg.event.models.Status;
+import no.auke.mg.channel.models.Status;
 
 // all user session within the same time frame
 public class TimeFrame {
 
-	private EventService eventservice;
+	private ChannelService channelservice;
 
 	private int delay;
 	public int getDelay() {return delay;}
@@ -25,8 +25,8 @@ public class TimeFrame {
 	public List<UserSession> getUserSessions() {return new ArrayList<UserSession>(usersessions.values());}
 
 
-	public TimeFrame(EventService eventservice, int delay) {
-		this.eventservice=eventservice;
+	public TimeFrame(ChannelService channelservice, int delay) {
+		this.channelservice=channelservice;
 		this.delay=delay;
 	}
 
@@ -57,7 +57,7 @@ public class TimeFrame {
 			}
 		} finally {
 			if(resultslot!=null) {
-				eventservice.getStorage().saveResultSlot(resultslot);
+				channelservice.getStorage().saveSlot(resultslot);
 			} else {
 
 			}

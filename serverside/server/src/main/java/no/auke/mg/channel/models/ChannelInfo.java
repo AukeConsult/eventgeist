@@ -1,39 +1,39 @@
-package no.auke.mg.event.models;
+package no.auke.mg.channel.models;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EventInfo {
+public class ChannelInfo {
 
 	private String id;
 	public String getId() {return id;}
 	public void setId(String id) {this.id = id;}
 
-	private String eventid;
-	public String getEventid() {return eventid;}
-	public void setEventid(String eventid) {this.eventid = eventid;}
+	private String channelid;
+	public String getChannelid() {return channelid;}
+	public void setChannelid(String channelid) {this.channelid = channelid;}
 
 	private String type;
 	public String getType() {return type;}
 	public void setType(String type) {this.type=type;}
 
-	private String eventname;
-	public String getEventname() {return eventname;}
-	public void setEventname(String eventname) {this.eventname = eventname;}
+	private String name;
+	public String getName() {return name;}
+	public void setName(String name) {this.name = name;}
 
-	private String eventtags;
-	public String getEventtags() {return eventtags;}
-	public void setEventtags(String eventtags) {this.eventtags = eventtags;}
+	private String tags;
+	public String getTags() {return tags;}
+	public void setTags(String eventtags) {this.tags = tags;}
 
-	private Date eventstart;
-	public Date getEventstart() {return eventstart;}
-	public void setEventstart(Date eventstart) {this.eventstart = eventstart;}
+	private Date start;
+	public Date getStart() {return start;}
+	public void setStart(Date start) {this.start = start;}
 
-	private Date eventstop;
-	public Date getEventstop() {return eventstop;}
-	public void setEventstop(Date eventstop) {this.eventstop = eventstop;}
+	private Date stop;
+	public Date getStop() {return stop;}
+	public void setStop(Date stop) {this.stop = stop;}
 
 	private int timeslot_period=2000;
 	public int getTimeslot_period() {return timeslot_period;}
@@ -61,8 +61,8 @@ public class EventInfo {
 	public void setProps(Map<String, Object> props) {this.props = props;}
 
 	// constr
-	public EventInfo(String eventid) {
-		this.eventid=eventid;
+	public ChannelInfo(String channelid) {
+		this.channelid=channelid;
 	}
 	public Team createTeam(String teamid) {
 		Team team = new Team(teamid);

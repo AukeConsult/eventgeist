@@ -14,11 +14,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.auke.mg.event.EventService;
-import no.auke.mg.event.ResultSlot;
-import no.auke.mg.event.UserSession;
-import no.auke.mg.event.models.EventInfo;
-import no.auke.mg.eventimpl.football.FootballEvent;
+import no.auke.mg.channel.ChannelService;
+import no.auke.mg.channel.ResultSlot;
+import no.auke.mg.channel.UserSession;
+import no.auke.mg.channel.models.ChannelInfo;
+import no.auke.mg.channelimpl.football.FootballChannel;
 import no.auke.mg.services.Storage;
 
 @RunWith(PowerMockRunner.class)
@@ -42,7 +42,7 @@ public class MassProdTest {
 		}
 
 		@Override
-		public EventInfo readEvent(String eventid) {
+		public ChannelInfo readhannel(String eventid) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -56,7 +56,7 @@ public class MassProdTest {
 	}
 
 
-	EventService event;
+	ChannelService channel;
 
 	TestJsonMonitor monitor;
 	TestStorage storage;
@@ -67,8 +67,8 @@ public class MassProdTest {
 		monitor = new TestJsonMonitor();
 		storage = new TestStorage();
 
-		event = new FootballEvent(new EventInfo("test"), monitor, storage);
-		event.init();
+		channel = new FootballChannel(new ChannelInfo("test"), monitor, storage);
+		channel.init();
 
 	}
 
@@ -80,7 +80,7 @@ public class MassProdTest {
 		AtomicInteger cnt= new AtomicInteger(0);
 		AtomicBoolean closed = new AtomicBoolean(false);
 
-		public userThread(EventService event, String userid) {
+		public userThread(ChannelService event, String userid) {
 			usersession = new UserSession(userid, event, userid, (rnd.nextInt()>0?"team1":"team2"), "", 0);
 			event.addUser(usersession);
 			new Thread(this).start();
@@ -135,14 +135,8 @@ public class MassProdTest {
 						System.out.println("calculate " + String.valueOf(System.currentTimeMillis() - time));
 						Long startcalc = System.currentTimeMillis();
 
-						event.calculate();
-
+						channel.calculate();
 						nextwait = (int) (calctime - (System.currentTimeMillis() - startcalc));
-
-						//System.out.println("calculate finish");
-						if(event.getResultSlots().size()>0){
-							//System.out.println(event.getResultSlots().get(event.getResultSlots().size()-1).resultString);
-						}
 						System.out.println("calculate time " + String.valueOf(System.currentTimeMillis() - startcalc));
 
 						cnt++;
@@ -158,13 +152,13 @@ public class MassProdTest {
 		List<userThread> workers = new ArrayList<userThread>();
 
 		for(int i=0;i<num_usersessions;i++) {
-			workers.add(new userThread(event,"user"+i));
+			workers.add(new userThread(channel,"user"+i));
 		}
 
 		while(!closed.get()) {
 			try {
 				Thread.sleep(2000);
-				event.persist();
+				channel.persist();
 				int cnt=0;
 				for(userThread worker:workers) {
 					if(!worker.closed.get()) {

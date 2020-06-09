@@ -6,68 +6,59 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.Session;
 
-import no.auke.mg.event.EventService;
-import no.auke.mg.event.Storage;
-import no.auke.mg.event.UserSession;
-import no.auke.mg.event.dao.EventDao;
-import no.auke.mg.event.impl.FileSysStorage;
-import no.auke.mg.event.models.EventInfo;
-import no.auke.mg.eventimpl.football.FootballEvent;
+import no.auke.mg.channel.ChannelService;
+import no.auke.mg.channel.UserSession;
+import no.auke.mg.channel.impl.FileSysStorage;
+import no.auke.mg.channel.models.ChannelInfo;
+import no.auke.mg.channelimpl.football.FootballChannel;
+import no.auke.mg.services.Storage;
 
 public class EventBroker {
 
 	private static EventBroker instance;
 
-	private static Map<String, EventService> events = new ConcurrentHashMap<String, EventService>();
+	private static Map<String, ChannelService> events = new ConcurrentHashMap<String, ChannelService>();
 	private static Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 
 	private static int timeslot_period_default=2000;
 	public static String reportDir="";
-
-	private static EventDao eventdao;
-	public static EventDao getEventDao() {
-		if(eventdao==null) {
-
-		}
-		return eventdao;
-	}
 
 	public static WsMonitor monitor;
 	public static Storage storage;
 
 	private EventBroker() {}
 
-	public static void addSession(Session session, String eventtype, String eventid, String userid, String support, String position) {
+	public static void addSession(Session session, String eventtype, String channelid, String userid, String support, String position) {
 
 		initialize();
 
 		try {
 
-			if(!events.containsKey(eventid.trim())) {
+			if(!events.containsKey(channelid.trim())) {
 
 				// get eventifo
 
-				EventInfo info = new EventInfo(eventid.trim());
-				info.setEventid(eventid.trim());
+				ChannelInfo info = new ChannelInfo(channelid.trim());
+				info.setChannelid(channelid.trim());
 				info.setType(eventtype.trim());
 				info.setTimeslot_period(timeslot_period_default);
 
-				// check what type of event
+				// check what type of channel
 				if(info.equals("football")) {
-					events.put(info.getEventid(), new FootballEvent(info, monitor,storage));
+					events.put(info.getChannelid(), new FootballChannel(info, monitor,storage));
 				}
 
-				// read event info
-				// initialize and start event
-				events.get(info.getEventid()).init();
+				// read channel info
+				// initialize and start channel
+				events.get(info.getChannelid()).init();
 
 
 			}
 
-			EventService event = events.get(eventid.trim());
+			ChannelService channel = events.get(channelid.trim());
 
-			UserSession usersession = new UserSession(session.getId(), event, userid.trim(), support.trim(), position.trim(),0);
-			event.addUser(usersession);
+			UserSession usersession = new UserSession(session.getId(), channel, userid.trim(), support.trim(), position.trim(),0);
+			channel.addUser(usersession);
 
 			usersessions.put(session.getId(), usersession);
 
@@ -96,10 +87,10 @@ public class EventBroker {
 		if (instance == null) {
 
 			// read parameters
-			reportDir="C:/projects/tmp_testoutput/events/";
+			reportDir="C:/projects/tmp_testoutput/channel/";
 			new File(reportDir).mkdir();
 
-			//reportDir = System.getProperty("user.dir") + "/events/";
+			//reportDir = System.getProperty("user.dir") + "/channel/";
 			instance = new EventBroker();
 			monitor = new WsMonitor();
 			storage = new FileSysStorage(reportDir);

@@ -1,4 +1,4 @@
-package no.auke.mg.eventimpl.football;
+package no.auke.mg.channelimpl.football;
 
 import java.util.ArrayList;
 import java.util.HashMap;

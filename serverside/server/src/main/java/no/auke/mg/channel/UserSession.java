@@ -1,4 +1,4 @@
-package no.auke.mg.event;
+package no.auke.mg.channel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
-import no.auke.mg.event.feedbacks.FeedBack;
+import no.auke.mg.channel.feedbacks.FeedBack;
 
 public class UserSession {
 
-	private EventService event;
+	private ChannelService event;
 
 	private String sessionid;
 	private String userid;
@@ -60,7 +60,7 @@ public class UserSession {
 		return ret_rep;
 	}
 
-	public UserSession(String sessionid, EventService event, String userid, String team, String position, int delay) {
+	public UserSession(String sessionid, ChannelService event, String userid, String team, String position, int delay) {
 		this.sessionid=sessionid;
 		this.event=event;
 		this.userid=userid;
@@ -71,7 +71,7 @@ public class UserSession {
 
 	public boolean hasResult() {return hasresult.getAndSet(false);}
 	public void setResponse(String response) {hasresult.set(true);}
-	public EventService getEvent() {return event;}
+	public ChannelService getEvent() {return event;}
 
 	public int getDelay() {return delay;}
 	public String getId() {return sessionid;}

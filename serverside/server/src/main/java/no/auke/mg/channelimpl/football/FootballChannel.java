@@ -1,30 +1,29 @@
-package no.auke.mg.eventimpl.football;
+package no.auke.mg.channelimpl.football;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import no.auke.mg.event.EventService;
-import no.auke.mg.event.ResultSlot;
-import no.auke.mg.event.UserSession;
-import no.auke.mg.event.models.EventInfo;
-import no.auke.mg.event.models.Team;
+import no.auke.mg.channel.ChannelService;
+import no.auke.mg.channel.ResultSlot;
+import no.auke.mg.channel.UserSession;
+import no.auke.mg.channel.models.ChannelInfo;
+import no.auke.mg.channel.models.Team;
 import no.auke.mg.services.Monitor;
 import no.auke.mg.services.Storage;
 
-public class FootballEvent extends EventService {
+public class FootballChannel extends ChannelService {
 
-	public FootballEvent(EventInfo eventinfo, Monitor monitor, Storage storage) {
-		super(eventinfo, monitor,storage);
+	public FootballChannel(ChannelInfo channelid, Monitor monitor, Storage storage) {
+		super(channelid, monitor,storage);
 	}
 
 	@Override
 	protected void executeSlotStart(ResultSlot slot) {
 
-		slot.isresult=false;
 		FootballFeedback res = new FootballFeedback();
-		res.sp=slot.currentpos;
-		res.evid=getEventid();
+		res.sp=slot.pos;
+		res.chid=getChannelid();
 		slot.feedback=res;
 
 	}
@@ -113,8 +112,8 @@ public class FootballEvent extends EventService {
 			FootballFeedback current_res=(FootballFeedback) slot.feedback;
 			if(current_res==null) {
 				current_res = new FootballFeedback();
-				current_res.sp=slot.currentpos;
-				current_res.evid=getEventid();
+				current_res.sp=slot.pos;
+				current_res.chid=getChannelid();
 				slot.feedback=current_res;
 			}
 

@@ -1,4 +1,4 @@
-package no.auke.mg.event.impl;
+package no.auke.mg.channel.impl;
 
 import java.io.File;
 import java.util.List;
@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import no.auke.mg.event.ResultSlot;
-import no.auke.mg.event.models.EventInfo;
+import no.auke.mg.channel.ResultSlot;
+import no.auke.mg.channel.models.ChannelInfo;
 import no.auke.mg.services.Storage;
 
 public class FileSysStorage extends Storage {
@@ -34,7 +34,7 @@ public class FileSysStorage extends Storage {
 
 			//String persistloc=location + "/" + eventinfo.getEventid();
 			//new File(persistloc).mkdir();
-			//events.put(eventinfo.getEventid(), eventinfo);
+			//channel.put(eventinfo.getEventid(), eventinfo);
 			//objectMapper.writeValue(new File(location + "/info.json"), eventinfo);
 
 			//String persistloc=location + "/" + status.getEventid();
@@ -60,7 +60,7 @@ public class FileSysStorage extends Storage {
 	}
 
 	@Override
-	public EventInfo readEvent(String eventid) {
+	public ChannelInfo readhannel(String eventid) {
 		// TODO Auto-generated method stub
 		return null;
 	}

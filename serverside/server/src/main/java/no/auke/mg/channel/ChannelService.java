@@ -1,4 +1,4 @@
-package no.auke.mg.event;
+package no.auke.mg.channel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,19 +8,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import no.auke.mg.event.feedbacks.FeedBackSlot;
-import no.auke.mg.event.models.EventInfo;
-import no.auke.mg.event.models.EventStatus;
-import no.auke.mg.event.models.Status;
-import no.auke.mg.event.models.Team;
+import no.auke.mg.channel.feedbacks.FeedBackSlot;
+import no.auke.mg.channel.models.ChannelInfo;
+import no.auke.mg.channel.models.ChannelStatus;
+import no.auke.mg.channel.models.Status;
+import no.auke.mg.channel.models.Team;
 import no.auke.mg.services.Monitor;
 import no.auke.mg.services.Storage;
 
 
-public abstract class EventService  {
+public abstract class ChannelService  {
 
-	private String eventid;
-	public String getEventid() {return eventid;}
+	private String channelid;
+	public String getChannelid() {return channelid;}
 
 	private long starttime;
 	public long getStarttime() {return starttime;}
@@ -34,16 +34,12 @@ public abstract class EventService  {
 	private int timeslot_period=1000;
 	public int getTimeslot_period() {return timeslot_period;}
 
-	protected Map<Integer, ResultSlot> resultslots = new ConcurrentHashMap<Integer, ResultSlot>();
-	public List<ResultSlot> getResultSlots() {return new ArrayList<ResultSlot>(resultslots.values());}
-
 	protected Map<Integer, TimeFrame> timeframes = new ConcurrentHashMap<Integer, TimeFrame>();
 	public List<TimeFrame> getTimeframes() {return new ArrayList<TimeFrame>(timeframes.values());}
 
-
-	private EventInfo 		eventinfo;
-	public EventInfo 		getEventinfo() {return eventinfo;}
-	public void 			setEventinfo(EventInfo eventinfo) {this.eventinfo = eventinfo;}
+	private ChannelInfo 	channelinfo;
+	public ChannelInfo 		getChannelinfo() {return channelinfo;}
+	public void 			setChannelinfo(ChannelInfo channelinfo) {this.channelinfo = channelinfo;}
 
 	// services
 	private Monitor 		monitor;
@@ -55,12 +51,12 @@ public abstract class EventService  {
 	protected String persistDir;
 	protected String persistDirPos;
 
-	public EventService(EventInfo eventinfo, Monitor monitor, Storage storage) {
+	public ChannelService(ChannelInfo channelinfo, Monitor monitor, Storage storage) {
 
-		this.eventid=eventinfo.getEventid();
+		this.channelid=channelinfo.getChannelid();
 
-		this.timeslot_period=eventinfo.getTimeslot_period();
-		this.eventinfo = eventinfo;
+		this.timeslot_period=channelinfo.getTimeslot_period();
+		this.channelinfo = channelinfo;
 		this.monitor=monitor;
 		this.storage=storage;
 
@@ -72,8 +68,8 @@ public abstract class EventService  {
 
 	public void persist() {
 
-		EventStatus status = new EventStatus();
-		status.setEventid(eventid);
+		ChannelStatus status = new ChannelStatus();
+		status.setEventid(channelid);
 		status.setCurrentpos(currentpos.get());
 		status.setStarttime(starttime);
 		status.setTimeslot_period(timeslot_period);
@@ -85,7 +81,7 @@ public abstract class EventService  {
 			cnt+=timeframe.getUserSessions().size();
 		}
 		status.setUsersessions(cnt);
-		storage.saveEventStatus(status);
+		storage.saveChannelStatus(status);
 
 	}
 
@@ -143,8 +139,8 @@ public abstract class EventService  {
 		if(!timeframes.containsKey(session.getDelay())) {
 			timeframes.put(session.getDelay(), new TimeFrame(this,session.getDelay()));
 		}
-		if(!eventinfo.getTeams().containsKey(session.getTeam())) {
-			initTeam(eventinfo.createTeam(session.getTeam()));
+		if(!channelinfo.getTeams().containsKey(session.getTeam())) {
+			initTeam(channelinfo.createTeam(session.getTeam()));
 		}
 		timeframes.get(session.getDelay()).addUser(session);
 
@@ -172,25 +168,11 @@ public abstract class EventService  {
 			int slotpos = currentpos.get() - timeframe.getDelay();
 
 			ResultSlot slot=null;
-			if(timeframe.getDelay()==0) {
-
+			slot = storage.getSlot(channelid, slotpos - timeframe.getDelay());
+			if(slot==null) {
 				slot = newResultSlot();
-				slot.currentpos = currentpos.get();
-
-			} else {
-
-				if(!resultslots.containsKey(slotpos)) {
-
-					slot = storage.getSlot(eventid, slotpos);
-
-					if(slot==null) {
-						slot = newResultSlot();
-						slot.currentpos = currentpos.get();
-					}
-					resultslots.put(slot.currentpos,slot);
-				}
-
-				slot = resultslots.get(slotpos);
+				slot.channelid=channelid;
+				slot.pos = currentpos.get() - timeframe.getDelay();
 			}
 
 			executeSlotStart(slot);
@@ -255,12 +237,11 @@ public abstract class EventService  {
 				cnt_empty=0;
 			}
 
-			resultslots.put(slot.currentpos, slot);
-
 			// adding slot to send to timeframe
 			timeframe.setResultslot(slot);
 			// adding to sending monitor
 			monitor.sendTimeFrame(timeframe);
+			storage.saveSlot(slot);
 
 		}
 

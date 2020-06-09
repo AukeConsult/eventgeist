@@ -24,14 +24,14 @@ public class ApiController {
 		return new ModelAndView("restapidoc");
 	}
 
-	@RequestMapping("/event/{eventid}/info")
+	@RequestMapping("/channel/{eventid}/info")
 	public ModelAndView info() {
-		return new ModelAndView("event");
+		return new ModelAndView("channel");
 	}
 
-	@RequestMapping("/event/{eventid}/status")
+	@RequestMapping("/channel/{eventid}/status")
 	public ModelAndView status() {
-		return new ModelAndView("event");
+		return new ModelAndView("channel");
 	}
 
 }

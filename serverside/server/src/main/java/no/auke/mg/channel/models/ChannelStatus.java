@@ -1,6 +1,6 @@
-package no.auke.mg.event.models;
+package no.auke.mg.channel.models;
 
-public class EventStatus {
+public class ChannelStatus {
 
 	private String eventid;
 	private long starttime;
@@ -11,7 +11,7 @@ public class EventStatus {
 	private int timeframes;
 	private int usersessions;
 
-	public String getEventid() {return eventid;}
+	public String getChannelid() {return eventid;}
 	public long getStarttime() {return starttime;}
 	public long getCurrenttime() {return currenttime;}
 	public long getHits() {return hits;}
