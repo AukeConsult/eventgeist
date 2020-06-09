@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <title>leif test</title>
+</head>
+<style type="text/css">
+body {
+	background-image: url('https://cdn.crunchify.com/bg.png');
+}
+</style>
+
+<script type="text/javascript" charset="UTF-8">
+
+	class EventBrokerClient {
+		constructor(address,parameters) {
+	        this.webSocket = null;
+	        this.address = address;
+	        this.parameters = parameters;
+	    }
+	    getServerUrl() {return "ws://" + this.address + "/evsocket" + this.parameters;}
+	    isopen() {
+	    	return this.webSocket.readyState == WebSocket.OPEN;
+	    }
+	    connect() {
+	    	try {
+	    		this.webSocket = new WebSocket(this.getServerUrl());
+	            this.webSocket.onopen = function(event) {
+	                console.log('onopen::' + JSON.stringify(event, null, 4));
+	            }
+	            this.webSocket.onmessage = function(event) {
+	                console.log('onmessage::' + JSON.stringify(event.data, null, 4));
+	                prosessMessage(event.data);
+	            }
+	            this.webSocket.onclose = function(event) {
+	                //console.log('onclose::' + JSON.stringify(event, null, 4));
+	            }
+	            this.webSocket.onerror = function(event) {
+	                console.log('onerror::' + JSON.stringify(event, null, 4));
+	            }
+	        } catch (exception) {
+	            console.error(exception);
+	        	alert(exception);
+	        }
+	    }
+
+	    getStatus() {return this.webSocket.readyState;}
+	    send(message) {
+	        if (this.webSocket.readyState == WebSocket.OPEN) {
+	            this.webSocket.send(message);
+
+	        } else {
+	            console.error('webSocket is not open. readyState=' + this.webSocket.readyState);
+	            alert('webSocket is not open. readyState=' + this.webSocket.readyState);
+	        }
+	    }
+	    disconnect() {
+	        if (this.webSocket.readyState == WebSocket.OPEN) {
+	            this.webSocket.close();
+	        } else {
+	            console.error('webSocket is not open. readyState=' + this.webSocket.readyState);
+	            alert('webSocket is not open. readyState=' + this.webSocket.readyState);
+	        }
+	    }
+	}
+
+	var client;
+	function init(brokeraddress, eventtype, event, user, support) {
+
+		if(client!=null && client.isopen()) {
+			client.disconnect();
+		}
+
+		client = new EventBrokerClient(brokeraddress,'?eventtype=' + eventtype.trim() + '&event=' + event.trim() + ' &user=' + user.trim() + '&support=' + support.trim());
+		client.connect();
+
+	}
+
+	function sendmessage(message) {
+		if(client!=null) {
+			client.send("M#"+message);
+		}
+	}
+	function sendclick(clickid) {
+		if(client!=null) {
+			client.send("C#"+clickid);
+		}
+	}
+
+</script>
+
+<script type="text/javascript">
+
+var messages = [];
+
+var team1_num;
+var team1_total;
+var team1_jubel;
+var team1_buu;
+
+var team2_num;
+var team2_total;
+var team2_jubel;
+var team2_buu;
+
+    function prosessMessage(data) {
+
+    	team1_num=null;
+    	team1_total=null;
+    	team1_jubel=null;
+    	team1_buu=null;
+
+    	var team2_num=null;
+    	var team2_total=null;
+    	var team2_jubel=null;
+    	var team2_buu=null;
+
+        let json;
+        try {
+          json = JSON.parse(data);
+          console.log(json);
+        } catch (exception) {
+          //console.log(exception);
+        }
+
+        if(json) {
+
+        	var chid = json.chid;
+        	var evid = json.evid;
+        	var t = json.t;
+
+        	console.log(t);
+
+        	if(t.trim()==="S".trim()) {
+
+				for (i in json.msg) {
+					setmessage(json.msg[i])
+				}
+
+				for (i in json.teams) {
+
+					let team = json.teams[i];
+
+					console.log(team.id);
+					console.log(team.num);
+
+					if(team.hits) {
+
+						for (x in team.hits) {
+
+							let hit = team.hits[x];
+							storeresult(team.id,team.num,hit)
+
+						}
+					}
+				}
+
+				printGui();
+
+        	} else {
+                console.log(data);
+        	}
+
+        }
+
+
+   		var pre = document.createElement("p");
+        pre.style.wordWrap = "break-word";
+        pre.innerHTML = '<span style = "color: blue;">' +
+        data +'</span>'
+        document.getElementById("output").appendChild(pre);
+
+    }
+
+    function setmessage(message) {
+    	messages.push(message);
+		console.log(message);
+    }
+
+    function storeresult(team,num,hit) {
+
+		console.log(team);
+		console.log(num);
+		console.log(hit);
+
+    	if(team==="team1") {
+
+			team1_num=num;
+
+			console.log(hit.id);
+			console.log(hit.val);
+			console.log(hit.avg1);
+			console.log(hit.avg2);
+
+    		if(hit.id==="tot") {
+    			team1_total=hit;
+        	} else if(hit.id==="jubel") {
+        	    team1_jubel=hit;
+        	} else if(hit.id==="buu") {
+        	    team1_buu=hit;
+        	}
+
+    	} else if(team==="team2"){
+
+			console.log(hit.id);
+			console.log(hit.val);
+			console.log(hit.avg1);
+			console.log(hit.avg2);
+
+			team2_num=num;
+
+        	if(hit.id==="tot") {
+    			team2_total=hit;
+        	} else if(hit.id==="jubel") {
+        	    team2_jubel=hit;
+        	} else if(hit.id==="buu") {
+        	    team2_buu=hit;
+        	}
+
+    	}
+
+    }
+
+    function printGui() {
+
+		// set gui from variables here
+
+		if(team1_num) {
+
+			console.log("team1");
+			console.log(team1_num);
+			console.log(team1_total);
+			console.log(team1_jubel);
+			console.log(team1_buu);
+
+		}
+
+		if(team2_num) {
+
+			console.log("team1");
+			console.log(team2_num);
+			console.log(team2_total);
+			console.log(team2_jubel);
+			console.log(team2_buu);
+
+		}
+
+
+    }
+
+
+</script>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>test event</title>
+</head>
+
+<body>
+
+<div style="font-family: verdana; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center;">
+
+	<h2>Test event response</h2>
+
+	<div id="match" visible=true>
+
+		<form>
+			<input type="text" placeholder="Legg inn eventid" id="eventid">
+			<input type="text" placeholder="Legg inn brukernick" id="userid">
+			<input type="radio" name="choice" value="team1"> team 1
+	        <input type="radio" name="choice" value="team2"> team 2
+	        <input type="button" id="btn" value="Start event">
+		</form>
+
+		<br>
+
+	</div>
+
+	<div id="play">
+
+
+		<button onclick="sendclick('jubel')">click jubel</button>
+		<button onclick="sendclick('buu')">click buu</button>
+		<br>
+		<br>Melding:
+		<input type="text" id="message"> <button onclick="sendmessage(document.getElementById('message').value)">Send</button><br><br>
+		<br>
+		<div id = "output"></div>
+	</div>
+
+		<script type="text/javascript">
+
+			const btn = document.getElementById("btn");
+
+			btn.onclick = function () {
+	            const rbs = document.querySelectorAll('input[name="choice"]');
+	            let selectedTeam;
+	            for (const rb of rbs) {
+	                if (rb.checked) {
+	                	selectedTeam = rb.value;
+	                    break;
+	                }
+	            }
+
+				init('localhost:8080/broker','football',
+						document.getElementById("eventid").value,
+						document.getElementById("userid").value,
+						selectedTeam
+
+				)
+
+				const output = document.getElementById("output");
+  				while (output.firstChild) {
+  					output.removeChild(output.lastChild);
+ 				}
+
+			};
+
+
+		</script>
+
+
+</div>
+</body>
+</html>
