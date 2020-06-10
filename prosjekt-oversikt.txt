@@ -17,7 +17,7 @@ Maskiner og installasjoner
 Tomcat testserver		
 Adresse: 	89.221.242.36
 Bruker:		auke
-Passoed 	#auke123#
+Passord 	#gtx123#
 
 Tomcat testserver 
 http://89.221.242.36:8080	

@@ -122,8 +122,6 @@ String uri = request.getServerName() +
 	<div id="match" visible=true>
 		
 		<form>
-			<input type="text" placeholder="Legg inn eventid" id="eventid">
-			<input type="text" placeholder="Legg inn brukernick" id="userid">
 			<input type="radio" name="choice" value="team1"> team 1
 	        <input type="radio" name="choice" value="team2"> team 2
 	        <input type="button" id="btn" value="Start event">				
@@ -160,8 +158,8 @@ String uri = request.getServerName() +
 	            }
 	
 				init('<%=uri%>/broker','football',
-						document.getElementById("eventid").value,
-						document.getElementById("userid").value,
+						'testx',
+						'userx',
 						selectedTeam
 			
 				)		
