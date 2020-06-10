@@ -2,9 +2,9 @@ package no.auke.mg.channel.models;
 
 import java.util.Map;
 
-public class Team {
+public class Team extends PersistObject {
 
-	private String id;
+	private String id ;
 	public String getId() {return id;}
 	public void setId(String id) {this.id = id;}
 
@@ -45,6 +45,11 @@ public class Team {
 	private Map<String, Object> props;
 	public Map<String, Object> getProps() {return props;}
 	public void setProps(Map<String, Object> props) {this.props = props;}
+
+	@Override
+	public String getPersistName() {
+		return getType() + "/" + getTeamid();
+	}
 
 
 }

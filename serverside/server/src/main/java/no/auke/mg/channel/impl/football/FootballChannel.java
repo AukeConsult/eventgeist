@@ -17,6 +17,9 @@ public class FootballChannel extends ChannelService {
 	public FootballChannel(ChannelInfo channelinfo) {
 		super(channelinfo);
 
+		if(channelinfo.getEventid()==null) {
+			channelinfo.setEventid(channelinfo.getChannelid());
+		}
 		EventInfo eventinfo = getStorage().getEventInfo(channelinfo.getEventid());
 		if(eventinfo==null) {
 			eventinfo = EventInfo.create(channelinfo.getEventid());

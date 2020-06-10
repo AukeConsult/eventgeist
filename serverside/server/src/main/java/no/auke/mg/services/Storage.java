@@ -21,10 +21,10 @@ public abstract class Storage {
 	protected Map<String,ChannelInfo> channels = new ConcurrentHashMap<String,ChannelInfo>();
 	protected Map<String,Map<Long,ResultSlot>> slots = new HashMap<String,Map<Long,ResultSlot>>();
 
-	protected Queue<EventInfo> save_events = new ConcurrentLinkedQueue<EventInfo>();
-	protected Queue<ChannelInfo> save_channels = new ConcurrentLinkedQueue<ChannelInfo>();
-	protected Queue<ChannelStatus> save_channelstatuses = new ConcurrentLinkedQueue<ChannelStatus>();
-	protected Queue<ResultSlot> save_slots = new ConcurrentLinkedQueue<ResultSlot>();
+	protected Queue<Object> save_events = new ConcurrentLinkedQueue<Object>();
+	protected Queue<Object> save_channels = new ConcurrentLinkedQueue<Object>();
+	protected Queue<Object> save_channelstatuses = new ConcurrentLinkedQueue<Object>();
+	protected Queue<Object> save_slots = new ConcurrentLinkedQueue<Object>();
 
 	public ChannelInfo getChannel(String channelid) {
 
@@ -68,7 +68,7 @@ public abstract class Storage {
 	}
 
 	public void saveSlot(ResultSlot slot) {
-		if(!slots.containsValue(slot.channelid)) {
+		if(!slots.containsKey(slot.channelid)) {
 			slots.put(slot.channelid, new HashMap<Long,ResultSlot>());
 		}
 		slots.get(slot.channelid).put(slot.pos, slot);
@@ -78,14 +78,14 @@ public abstract class Storage {
 		}
 	}
 	public ResultSlot getSlot(String channelid, long slotpos) {
-		if(!slots.containsValue(channelid)) {
+		if(!slots.containsKey(channelid)) {
 			slots.put(channelid, new HashMap<Long,ResultSlot>());
 		}
 		return slots.get(channelid).get(slotpos);
 	}
 
 	public List<ResultSlot> getResultSlots(String channelid) {
-		if(slots.containsValue(channelid)) {
+		if(slots.containsKey(channelid)) {
 			return new ArrayList<ResultSlot>(slots.get(channelid).values());
 		} else {
 			return new ArrayList<ResultSlot>();

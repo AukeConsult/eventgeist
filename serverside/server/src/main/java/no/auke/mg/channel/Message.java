@@ -1,4 +1,4 @@
-package no.auke.mg.channel.models;
+package no.auke.mg.channel;
 
 public class Message {
 
@@ -24,5 +24,6 @@ public class Message {
 		this.dl=delay;
 		this.js = js;
 	}
+
 
 }

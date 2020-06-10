@@ -1,13 +1,13 @@
 package no.auke.mg.channel.models;
 
-public class ChannelStatus {
+public class ChannelStatus extends PersistObject {
 
 	private String channelid;
 	private long starttime;
 	private long currenttime = System.currentTimeMillis();
 	private long hits=0;
 	private int currentpos=0;
-	private int timeslot_period=5000;
+	private int slotTime;
 	private int timeframes;
 	private int usersessions;
 
@@ -16,14 +16,14 @@ public class ChannelStatus {
 	public long getCurrenttime() {return currenttime;}
 	public long getHits() {return hits;}
 	public int getCurrentpos() {return currentpos;}
-	public int getTimeslot_period() {return timeslot_period;}
+	public int getSlotTime() {return slotTime;}
 	public int getTimeframes() {return timeframes;}
 	public int getUsersessions() {return usersessions;}
 
-	public void setChannelid(String eventid) {this.channelid = eventid;}
+	public void setChannelid(String channelid) {this.channelid = channelid;}
 	public void setStarttime(long starttime) {this.starttime = starttime;}
 	public void setCurrentpos(int currentpos) {this.currentpos = currentpos;}
-	public void setTimeslot_period(int timeslot_period) {this.timeslot_period = timeslot_period;}
+	public void setSlotTime(int slotTime) {this.slotTime = slotTime;}
 	public void setTimeframes(int timeframes) {this.timeframes = timeframes;}
 	public void setUsersessions(int usersessions) {this.usersessions = usersessions;}
 	public void setCurrenttime(long currenttime) {this.currenttime = currenttime;}
@@ -32,5 +32,10 @@ public class ChannelStatus {
 	private String eventid;
 	public String getEventid() {return eventid;}
 	public void setEventid(String eventid) {this.eventid = eventid;}
+
+	@Override
+	public String getPersistName() {
+		return getChannelid() + "-" + getCurrentpos() + "-" + getCurrenttime();
+	}
 
 }

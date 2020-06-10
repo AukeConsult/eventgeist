@@ -11,11 +11,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import no.auke.mg.channel.feedbacks.FeedBackSlot;
 import no.auke.mg.channel.models.ChannelInfo;
 import no.auke.mg.channel.models.ChannelStatus;
-import no.auke.mg.channel.models.Status;
 import no.auke.mg.channel.models.Team;
 import no.auke.mg.services.Monitor;
 import no.auke.mg.services.Storage;
-
 
 public abstract class ChannelService  {
 
@@ -71,8 +69,6 @@ public abstract class ChannelService  {
 		this.channelid=channelinfo.getChannelid();
 		this.eventid=channelinfo.getChannelid();
 
-
-
 		this.slotTime.set(channelinfo.getSlotTime());
 		this.avg1Period.set(channelinfo.getAvg1Time() / channelinfo.getSlotTime());
 		this.avg2Period.set(channelinfo.getAvg2Time() / channelinfo.getSlotTime());
@@ -96,10 +92,9 @@ public abstract class ChannelService  {
 		status.setEventid(channelid);
 		status.setCurrentpos(currentpos.get());
 		status.setStarttime(starttime);
-		status.setTimeslot_period(slotTime.get());
+		status.setSlotTime(slotTime.get());
 		status.setTimeframes(timeframes.size());
 		status.setHits(hits.get());
-
 		int cnt=0;
 		for(TimeFrame timeframe:getTimeframes()) {
 			cnt+=timeframe.getUserSessions().size();
@@ -119,7 +114,6 @@ public abstract class ChannelService  {
 
 		starttime=System.currentTimeMillis();
 		persist();
-
 		storage.doSave();
 
 		// persist status
@@ -203,7 +197,8 @@ public abstract class ChannelService  {
 			slot = storage.getSlot(channelid, slotpos - timeframe.getDelay());
 			if(slot==null) {
 				slot = newResultSlot();
-				slot.channelid=channelid;
+				slot.channelid=getChannelid();
+				slot.eventid=getEventid();
 				slot.pos = currentpos.get() - timeframe.getDelay();
 			}
 

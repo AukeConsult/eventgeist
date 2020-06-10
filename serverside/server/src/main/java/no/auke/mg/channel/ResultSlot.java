@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.auke.mg.channel.feedbacks.FeedBack;
-import no.auke.mg.channel.models.Message;
-import no.auke.mg.channel.models.Status;
 
 public class ResultSlot {
 
@@ -27,10 +25,10 @@ public class ResultSlot {
 		return msg;
 	}
 
-	public List<Status> stlist= new ArrayList<Status>();
+	public List<Status> statuslist= new ArrayList<Status>();
 	public Status addStatus(String type, String userid, String js) {
 		Status sts = new Status(type, userid, js);
-		stlist.add(sts);
+		statuslist.add(sts);
 		return sts;
 	}
 

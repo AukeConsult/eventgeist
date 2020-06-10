@@ -2,8 +2,8 @@ package no.auke.mg.channel.feedbacks;
 
 import java.util.List;
 
-import no.auke.mg.channel.models.Message;
-import no.auke.mg.channel.models.Status;
+import no.auke.mg.channel.Message;
+import no.auke.mg.channel.Status;
 
 public class FeedBackSlot extends FeedBack {
 

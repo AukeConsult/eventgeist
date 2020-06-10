@@ -1,4 +1,4 @@
-package no.auke.mg.channel.models;
+package no.auke.mg.channel;
 
 public class Status {
 

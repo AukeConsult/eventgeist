@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ChannelInfo {
+public class ChannelInfo extends PersistObject {
 
 	private String channelid;
 	public String getChannelid() {return channelid;}
@@ -74,6 +74,11 @@ public class ChannelInfo {
 
 		return info;
 
+	}
+
+	@Override
+	public String getPersistName() {
+		return getChannelid();
 	}
 
 }

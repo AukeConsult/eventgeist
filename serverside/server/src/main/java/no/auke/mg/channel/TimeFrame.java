@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import no.auke.mg.channel.feedbacks.FeedBack;
-import no.auke.mg.channel.models.Status;
 
 // all user session within the same time frame
 public class TimeFrame {

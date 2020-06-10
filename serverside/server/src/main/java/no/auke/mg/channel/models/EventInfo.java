@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EventInfo {
+public class EventInfo extends PersistObject {
 
 	private String id;
 	public String getId() {return id;}
@@ -28,7 +28,7 @@ public class EventInfo {
 
 	private String tags;
 	public String getTags() {return tags;}
-	public void setTags(String eventtags) {this.tags = tags;}
+	public void setTags(String tags) {this.tags = tags;}
 
 	private Date start;
 	public Date getStart() {return start;}
@@ -42,26 +42,29 @@ public class EventInfo {
 	public Map<String, Team> getTeams() {return teams;}
 	public void setTeams(Map<String, Team> teams) {this.teams = teams;}
 
-	private Map<String, Object> props;
+	private Map<String, Object> props = new HashMap<String,Object>();
 	public Map<String, Object> getProps() {return props;}
 	public void setProps(Map<String, Object> props) {this.props = props;}
 
-	// constr
-	public EventInfo(String eventid) {
-		this.eventid=eventid;
+	@Override
+	public String getPersistName() {
+		return getEventid();
 	}
 
 	public static EventInfo create(String eventid) {
 
-		EventInfo info = new EventInfo(eventid);
+		EventInfo info = new EventInfo();
 
-		info.getTeams().put("team1", new Team("team1","dette er team 1",""));
-		info.getTeams().put("team2", new Team("team2","dette er team 2",""));
+		info.setEventid(eventid);
+		info.setName("testname");
+
+		info.getTeams().put("team1", new Team("stg","dette er team 1","football"));
+		info.getTeams().put("team2", new Team("brn","dette er team 2","football"));
 
 		info.getProps().put("bilde", null);
 		info.getProps().put("kampfakta", "sasfasdasd");
-		info.getProps().put("osv1", "osv");
-		info.getProps().put("osv2", "osv");
+		info.getProps().put("osv1", null);
+		info.getProps().put("osv2", null);
 
 		return info;
 

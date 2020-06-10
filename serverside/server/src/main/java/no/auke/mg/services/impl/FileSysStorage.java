@@ -1,15 +1,16 @@
 package no.auke.mg.services.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Queue;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import no.auke.mg.channel.ResultSlot;
 import no.auke.mg.channel.models.ChannelInfo;
+import no.auke.mg.channel.models.PersistObject;
 import no.auke.mg.services.Storage;
 
 public class FileSysStorage extends Storage {
@@ -23,29 +24,38 @@ public class FileSysStorage extends Storage {
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 	}
 
+	private void saveQueue(Queue<Object> queue, String location, String fileext) {
+
+		while(queue.size()>0) {
+
+			try {
+
+				PersistObject obj = (PersistObject) queue.poll();
+				new File(location).mkdir();
+				String filename=location + "/" + obj.getPersistName() + fileext;
+
+				objectMapper.writeValue(new File(filename), obj);
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+
+	}
+
 	@Override
 	public void doSave() {
 
 		try {
 
-			//String persistloc=location + "/" + eventinfo.getEventid();
-			//new File(persistloc).mkdir();
-			//objectMapper.writeValue(new File(location + "/info.json"), eventinfo);
+			saveQueue(save_channels, location+"/channels",".json");
+			saveQueue(save_events, location+"/events",".json");
+			saveQueue(save_channelstatuses, location+"/channels",".json");
+			saveQueue(save_channelstatuses, location+"/channels/slots","-slot.json");
 
-			//String persistloc=location + "/" + eventinfo.getEventid();
-			//new File(persistloc).mkdir();
-			//channel.put(eventinfo.getEventid(), eventinfo);
-			//objectMapper.writeValue(new File(location + "/info.json"), eventinfo);
-
-			//String persistloc=location + "/" + status.getEventid();
-			//new File(persistloc).mkdir();
-			objectMapper.writeValue(new File(location + "/status.json"), "");
-
-
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
