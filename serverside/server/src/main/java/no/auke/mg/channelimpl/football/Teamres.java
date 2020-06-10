@@ -14,16 +14,14 @@ public class Teamres {
 	public int num=0;
 
 	@JsonIgnore
-	public Measure totwork = new Measure("tot");
+	public Measure totwork = new Measure("t");
 
 	@JsonIgnore
 	public Map<String,Measure> btnwork = new HashMap<String,Measure>();
 
 	public List<Measure> getHits() {
 		List<Measure> list = new ArrayList<Measure>();
-		if(totwork.val>0.0) {
-			list.add(totwork);
-		}
+		list.add(totwork);
 		for(Measure m:btnwork.values()) {
 			if(m.val>0.0 || m.avg1>0.0 || m.avg2>0.0) {
 				list.add(m);

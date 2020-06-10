@@ -14,6 +14,7 @@ import no.auke.mg.services.Storage;
 
 public class FootballChannel extends ChannelService {
 
+	//TODO: remove calculator (this) from channel service
 	public FootballChannel(ChannelInfo channelid, Monitor monitor, Storage storage) {
 		super(channelid, monitor,storage);
 	}
@@ -64,83 +65,128 @@ public class FootballChannel extends ChannelService {
 	}
 
 	private Queue<ResultSlot> history1 = new LinkedList<ResultSlot>();
-	private void calc_average1 (ResultSlot slot) {
+	private Queue<ResultSlot> history2 = new LinkedList<ResultSlot>();
 
-		// make average etc
+	private void calc_average (ResultSlot slot) {
+
+		// sum average 1
 		history1.add(slot);
 		if(history1.size()>5) {
 			history1.poll();
 		}
 
-		int num_pos=0;
-		FootballFeedback total_res=null;
+		history2.add(slot);
+		if(history2.size()>30) {
+			history2.poll();
+		}
+
+		FootballFeedback total_hist=null;
+
+		int num_hist1=0;
 		for(ResultSlot slothist:new ArrayList<ResultSlot>(history1)) {
 
-			num_pos++;
+			num_hist1++;
 			if(slothist.feedback!=null) {
 
-				FootballFeedback res = (FootballFeedback) slothist.feedback;
-				if(res.teamwork!=null) {
+				FootballFeedback res_hist = (FootballFeedback) slothist.feedback;
+				if(res_hist.teamwork!=null) {
 
-					if(total_res==null) {
-						total_res = new FootballFeedback();
-					}
+					// total pr team
+					for(String key_team:res_hist.teamwork.keySet()) {
 
-					for(String keyteaam:res.teamwork.keySet()) {
-
-						if(!total_res.teamwork.containsKey(keyteaam)) {
-							total_res.teamwork.put(keyteaam, new Teamres(keyteaam));
+						if(total_hist==null) {
+							total_hist=new FootballFeedback();
 						}
 
-						Teamres totalres = total_res.teamwork.get(keyteaam);
-						Teamres slotres = res.teamwork.get(keyteaam);
-						totalres.num += slotres.num;
-						totalres.totwork.val += slotres.totwork.val;
+						if(!total_hist.teamwork.containsKey(key_team)) {
+							total_hist.teamwork.put(key_team, new Teamres(key_team));
+						}
 
-						for(String keybtn:slotres.btnwork.keySet()){
-							if(!totalres.btnwork.containsKey(keybtn)){
-								totalres.btnwork.put(keybtn, new Measure(keybtn));
+						Teamres hist_res = res_hist.teamwork.get(key_team);
+
+						Teamres hist1_total = total_hist.teamwork.get(key_team);
+						hist1_total.totwork.avg1 += hist_res.totwork.val;
+
+						for(String keybtn:hist_res.btnwork.keySet()){
+							if(!hist1_total.btnwork.containsKey(keybtn)){
+								hist1_total.btnwork.put(keybtn, new Measure(keybtn));
 							}
-							totalres.btnwork.get(keybtn).val += slotres.btnwork.get(keybtn).val;
+							hist1_total.btnwork.get(keybtn).avg1 += hist_res.btnwork.get(keybtn).val;
 						}
 					}
 				}
 			}
 		}
 
-		if(total_res!=null) {
+		int num_hist2=0;
+		for(ResultSlot slothist:new ArrayList<ResultSlot>(history2)) {
 
-			FootballFeedback current_res=(FootballFeedback) slot.feedback;
-			if(current_res==null) {
-				current_res = new FootballFeedback();
-				current_res.sp=slot.pos;
-				current_res.chid=getChannelid();
-				slot.feedback=current_res;
+			num_hist2++;
+			if(slothist.feedback!=null) {
+
+				FootballFeedback res_hist = (FootballFeedback) slothist.feedback;
+				if(res_hist.teamwork!=null) {
+
+					// total pr team
+					for(String key_team:res_hist.teamwork.keySet()) {
+
+						if(total_hist==null) {
+							total_hist=new FootballFeedback();
+						}
+
+						if(!total_hist.teamwork.containsKey(key_team)) {
+							total_hist.teamwork.put(key_team, new Teamres(key_team));
+						}
+
+						Teamres hist_res = res_hist.teamwork.get(key_team);
+
+						Teamres hist_total = total_hist.teamwork.get(key_team);
+						hist_total.totwork.avg2 += hist_res.totwork.val;
+
+						for(String keybtn:hist_res.btnwork.keySet()){
+							if(!hist_total.btnwork.containsKey(keybtn)){
+								hist_total.btnwork.put(keybtn, new Measure(keybtn));
+							}
+							hist_total.btnwork.get(keybtn).avg2 += hist_res.btnwork.get(keybtn).val;
+						}
+					}
+				}
+			}
+		}
+
+		if(total_hist!=null) {
+
+			FootballFeedback current=(FootballFeedback) slot.feedback;
+			if(current==null) {
+				current = new FootballFeedback();
+				current.sp=slot.pos;
+				current.chid=getChannelid();
+				slot.feedback=current;
 			}
 
-			for(String keyteaam:total_res.teamwork.keySet()) {
+			for(String key_team:total_hist.teamwork.keySet()) {
 
-				if(!current_res.teamwork.containsKey(keyteaam)) {
-					current_res.teamwork.put(keyteaam, new Teamres(keyteaam));
+				if(!current.teamwork.containsKey(key_team)) {
+					current.teamwork.put(key_team, new Teamres(key_team));
 				}
 
-				Teamres total = total_res.teamwork.get(keyteaam);
-				Teamres res = current_res.teamwork.get(keyteaam);
-				res.totwork.avg1 = total.totwork.val / num_pos;
-				if(res.totwork.avg1>0) {
+				Teamres hist1_total = total_hist.teamwork.get(key_team);
+				Teamres current_res = current.teamwork.get(key_team);
+
+				current_res.totwork.avg1 = Math.round(hist1_total.totwork.avg1 / num_hist1 * 100.0) / 100.0;
+				current_res.totwork.avg2 = Math.round(hist1_total.totwork.avg2 / num_hist2 * 100.0) / 100.0;
+
+				if(current_res.totwork.avg1>0 || current_res.totwork.avg2>0) {
 					slot.isresult=true;
 				}
 
-				for(String keybtn:total.btnwork.keySet()){
-
-					if(!res.btnwork.containsKey(keybtn)){
-						res.btnwork.put(keybtn, new Measure(keybtn));
+				for(String keybtn:hist1_total.btnwork.keySet()){
+					if(!current_res.btnwork.containsKey(keybtn)){
+						current_res.btnwork.put(keybtn, new Measure(keybtn));
 					}
-
-					total.btnwork.get(keybtn);
-					res.btnwork.get(keybtn).avg1 = total.btnwork.get(keybtn).val/num_pos;
-
-					if(total.btnwork.get(keybtn).val>0) {
+					current_res.btnwork.get(keybtn).avg1 = Math.round(hist1_total.btnwork.get(keybtn).avg1 / num_hist1 * 100.0) / 100.0;
+					current_res.btnwork.get(keybtn).avg2 = Math.round(hist1_total.btnwork.get(keybtn).avg2 / num_hist2 * 100.0) / 100.0;
+					if(current_res.btnwork.get(keybtn).avg1>0 || current_res.btnwork.get(keybtn).avg2>0) {
 						slot.isresult=true;
 					}
 				}
@@ -149,99 +195,11 @@ public class FootballChannel extends ChannelService {
 
 	}
 
-	private Queue<ResultSlot> history2 = new LinkedList<ResultSlot>();
-	private void calc_average2 (ResultSlot slot) {
-
-		//		// make average etc
-		//		history2.add(slot);
-		//		if(history2.size()>5) {
-		//			history2.poll();
-		//		}
-		//
-		//		int num_pos=0;
-		//		FootballFeedback total_res=null;
-		//		for(ResultSlot slothist:new ArrayList<ResultSlot>(history2)) {
-		//
-		//			num_pos++;
-		//			if(slothist.feedback!=null) {
-		//
-		//				FootballFeedback res = (FootballFeedback) slothist.feedback;
-		//				if(res.teams!=null) {
-		//
-		//					if(total_res==null) {
-		//						total_res = new FootballFeedback();
-		//					}
-		//
-		//					for(String keyteaam:res.teams.keySet()) {
-		//
-		//						if(!total_res.teams.containsKey(keyteaam)) {
-		//							total_res.teams.put(keyteaam, new Teamres());
-		//						}
-		//
-		//						Teamres totalres = (Teamres) total_res.teams.get(keyteaam);
-		//						Teamres slotres = (Teamres) res.teams.get(keyteaam);
-		//						totalres.num += slotres.num;
-		//						totalres.hits.val += slotres.hits.val;
-		//
-		//						for(String keybtn:slotres.btn.keySet()){
-		//							if(!totalres.btn.containsKey(keybtn)){
-		//								totalres.btn.put(keybtn, new Measure());
-		//							}
-		//							totalres.btn.get(keybtn).val += slotres.btn.get(keybtn).val;
-		//						}
-		//					}
-		//				}
-		//			}
-		//		}
-		//
-		//		if(total_res!=null) {
-		//
-		//			FootballFeedback current_res=(FootballFeedback) slot.feedback;
-		//			if(current_res==null) {
-		//				current_res = new FootballFeedback();
-		//				current_res.sp=slot.currentpos;
-		//				current_res.evid=getEventid();
-		//				slot.feedback=current_res;
-		//			}
-		//
-		//			for(String keyteaam:total_res.teams.keySet()) {
-		//
-		//				if(!current_res.teams.containsKey(keyteaam)) {
-		//					current_res.teams.put(keyteaam, new Teamres());
-		//				}
-		//
-		//				Teamres total = (Teamres) total_res.teams.get(keyteaam);
-		//				Teamres res = (Teamres) current_res.teams.get(keyteaam);
-		//				res.totwork.avg2 = total.hits.val / num_pos;
-		//				if(total.hits.val>0) {
-		//					slot.isresult=true;
-		//				}
-		//
-		//				for(String keybtn:total.btn.keySet()){
-		//
-		//					if(!res.btn.containsKey(keybtn)){
-		//						res.btn.put(keybtn, new Measure());
-		//					}
-		//
-		//					total.btn.get(keybtn);
-		//					res.btn.get(keybtn).avg2 = total.btn.get(keybtn).val/num_pos;
-		//
-		//					if(total.btn.get(keybtn).val>0) {
-		//						slot.isresult=true;
-		//					}
-		//				}
-		//			}
-		//		}
-
-	}
-
-
 
 	@Override
 	protected void executeSlotEnd(ResultSlot slot, int time) {
 
-		calc_average1(slot);
-		calc_average2(slot);
+		calc_average(slot);
 
 		FootballFeedback res = (FootballFeedback) slot.feedback;
 		res.tm=time;

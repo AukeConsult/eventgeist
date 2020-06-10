@@ -20,7 +20,8 @@ public class TestMonitor extends Monitor {
 				try {
 					Object feedback = frame.readFeedBack();
 					if(feedback!=null) {
-						System.out.println(objectMapper.writeValueAsString(feedback));
+						String result = objectMapper.writeValueAsString(feedback);
+						System.out.println(result);
 					}
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();

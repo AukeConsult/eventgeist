@@ -13,6 +13,8 @@ public class ResultSlot {
 	public ResultSlot() {}
 
 	public String channelid;
+	public String eventid;
+
 	public long pos;
 	public long currenttime = System.currentTimeMillis();
 	public boolean isresult=false;

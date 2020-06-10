@@ -169,6 +169,7 @@ public class FootballTest {
 		List<UserSession> usersessions = channel.getUserSessions();
 
 		for(int x=0;x<10;x++) {
+
 			for(UserSession session:usersessions){
 				if(rnd.nextInt(3)==0) {
 					session.addResponse("C#btn1");
@@ -182,8 +183,31 @@ public class FootballTest {
 			monitor.print();
 		}
 
+	}
+
+	@Test
+	public void test_calculate_average() throws JsonProcessingException {
+
+		System.out.println("test_calculate_average");
+
+		for(int x=0;x<30;x++) {
+			for(UserSession session:channel.getUserSessions()){
+				session.addResponse("C#btn1");
+				session.addResponse("C#btn2");
+			}
+			channel.calculate();
+			Assert.assertTrue(monitor.getSend_frames().size()==1);
+			monitor.print();
+		}
+		for(int x=0;x<30;x++) {
+			channel.calculate();
+			Assert.assertTrue(monitor.getSend_frames().size()==1);
+			monitor.print();
+		}
+
 
 	}
+
 
 	@Test
 	public void test_calculate_json() throws JsonProcessingException {

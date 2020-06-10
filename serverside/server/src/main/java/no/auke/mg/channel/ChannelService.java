@@ -35,8 +35,14 @@ public abstract class ChannelService  {
 	private AtomicInteger currentpos= new AtomicInteger();
 	public int getCurrentpos() {return currentpos.get();}
 
-	private int timeslot_period=1000;
-	public int getTimeslot_period() {return timeslot_period;}
+	private AtomicInteger timeslot_period= new AtomicInteger(1000);
+	public int getTimeslot_period() {return timeslot_period.get();}
+
+	private AtomicInteger hist1_period= new AtomicInteger(5);
+	public int getHist1_period() {return hist1_period.get();}
+
+	private AtomicInteger hist2_period= new AtomicInteger(30);
+	public int getHist2_period() {return hist2_period.get();}
 
 	protected Map<Integer, TimeFrame> timeframes = new ConcurrentHashMap<Integer, TimeFrame>();
 	public List<TimeFrame> getTimeframes() {return new ArrayList<TimeFrame>(timeframes.values());}
@@ -60,9 +66,12 @@ public abstract class ChannelService  {
 		this.channelid=channelinfo.getChannelid();
 		this.eventid=channelinfo.getChannelid();
 
-		this.timeslot_period=channelinfo.getTimeslot_period();
+		this.timeslot_period.set(channelinfo.getTimeslot_period());
+
 		this.channelinfo = channelinfo;
 		this.monitor=monitor;
+
+		//TODO: make a separate storage object for each channel
 		this.storage=storage;
 
 	}
@@ -78,7 +87,7 @@ public abstract class ChannelService  {
 		status.setEventid(channelid);
 		status.setCurrentpos(currentpos.get());
 		status.setStarttime(starttime);
-		status.setTimeslot_period(timeslot_period);
+		status.setTimeslot_period(timeslot_period.get());
 		status.setTimeframes(timeframes.size());
 		status.setHits(hits.get());
 
@@ -129,15 +138,14 @@ public abstract class ChannelService  {
 				// calculating results
 
 				long start=System.currentTimeMillis();
-				long period = timeslot_period;
 				while (!stopthread.get()) {
 					try {
 
-						//System.out.println("calculate " + period);
+						System.out.println("calculate " + timeslot_period.get());
 						calculate();
-						start = start + period;
+						start = start + timeslot_period.get();
 						long wait = start - System.currentTimeMillis();
-						//System.out.println("wait " + wait);
+						System.out.println("wait " + wait);
 
 						if(wait>0) {
 							Thread.sleep(wait);
