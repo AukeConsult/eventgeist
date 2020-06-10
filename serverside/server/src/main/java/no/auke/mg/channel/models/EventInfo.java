@@ -47,13 +47,24 @@ public class EventInfo {
 	public void setProps(Map<String, Object> props) {this.props = props;}
 
 	// constr
-	public EventInfo(String channelid) {
-		this.channelid=channelid;
+	public EventInfo(String eventid) {
+		this.eventid=eventid;
 	}
-	public Team createTeam(String teamid) {
-		Team team = new Team(teamid);
-		teams.put(teamid, team);
-		return team;
+
+	public static EventInfo create(String eventid) {
+
+		EventInfo info = new EventInfo(eventid);
+
+		info.getTeams().put("team1", new Team("team1","dette er team 1",""));
+		info.getTeams().put("team2", new Team("team2","dette er team 2",""));
+
+		info.getProps().put("bilde", null);
+		info.getProps().put("kampfakta", "sasfasdasd");
+		info.getProps().put("osv1", "osv");
+		info.getProps().put("osv2", "osv");
+
+		return info;
+
 	}
 
 }

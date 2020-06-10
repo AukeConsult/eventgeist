@@ -1,4 +1,4 @@
-package no.auke.mg.channelimpl.football;
+package no.auke.mg.channel.impl.football;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ public class Teamres {
 	public int num=0;
 
 	@JsonIgnore
-	public Measure totwork = new Measure("t");
+	public Measure totwork = new Measure("tot");
 
 	@JsonIgnore
 	public Map<String,Measure> btnwork = new HashMap<String,Measure>();

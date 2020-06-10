@@ -10,6 +10,10 @@ public class TestMonitor extends Monitor {
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
+	public TestMonitor() {
+		Monitor.instance=this;
+	}
+
 	@Override
 	public void init() {}
 

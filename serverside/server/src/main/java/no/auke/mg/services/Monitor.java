@@ -8,6 +8,8 @@ import no.auke.mg.channel.UserSession;
 
 public abstract class Monitor {
 
+	public static Monitor instance;
+
 	protected Queue<TimeFrame> send_frames = new ConcurrentLinkedQueue<TimeFrame>();
 	public Queue<TimeFrame> getSend_frames() {return send_frames;}
 
@@ -15,7 +17,6 @@ public abstract class Monitor {
 	public Queue<UserSession> getSend_users() {return send_users;}
 
 	public Monitor() {}
-
 	public void sendUser(UserSession user) {
 		send_users.add(user);
 	}

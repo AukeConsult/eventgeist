@@ -8,7 +8,7 @@ import javax.websocket.Session;
 
 import no.auke.mg.channel.TimeFrame;
 import no.auke.mg.channel.UserSession;
-import no.auke.mg.services.JsonMonitor;
+import no.auke.mg.services.impl.JsonMonitor;
 
 public class WsMonitor extends JsonMonitor {
 

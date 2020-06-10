@@ -35,14 +35,17 @@ public abstract class ChannelService  {
 	private AtomicInteger currentpos= new AtomicInteger();
 	public int getCurrentpos() {return currentpos.get();}
 
-	private AtomicInteger timeslot_period= new AtomicInteger(1000);
-	public int getTimeslot_period() {return timeslot_period.get();}
+	private AtomicInteger slotTime = new AtomicInteger(2000);
+	public int getSlotTime() {return slotTime.get();}
+	public void setSlotTime(int slotTime) {this.slotTime.set(slotTime);}
 
-	private AtomicInteger hist1_period= new AtomicInteger(5);
-	public int getHist1_period() {return hist1_period.get();}
+	public AtomicInteger avg1Period = new AtomicInteger(15);
+	public int getAvg1period() {return avg1Period.get();}
+	public void setAvg1period(int avg1Period) {this.avg1Period.set(avg1Period);}
 
-	private AtomicInteger hist2_period= new AtomicInteger(30);
-	public int getHist2_period() {return hist2_period.get();}
+	public AtomicInteger avg2Period = new AtomicInteger(60);
+	public int getAvg2period() {return avg2Period.get();}
+	public void setAvg2period(int avg2Period) {this.avg2Period.set(avg2Period);}
 
 	protected Map<Integer, TimeFrame> timeframes = new ConcurrentHashMap<Integer, TimeFrame>();
 	public List<TimeFrame> getTimeframes() {return new ArrayList<TimeFrame>(timeframes.values());}
@@ -61,18 +64,24 @@ public abstract class ChannelService  {
 	protected String persistDir;
 	protected String persistDirPos;
 
-	public ChannelService(ChannelInfo channelinfo, Monitor monitor, Storage storage) {
+	public ChannelService(ChannelInfo channelinfo) {
+
+		this.channelinfo = channelinfo;
 
 		this.channelid=channelinfo.getChannelid();
 		this.eventid=channelinfo.getChannelid();
 
-		this.timeslot_period.set(channelinfo.getTimeslot_period());
+
+
+		this.slotTime.set(channelinfo.getSlotTime());
+		this.avg1Period.set(channelinfo.getAvg1Time() / channelinfo.getSlotTime());
+		this.avg2Period.set(channelinfo.getAvg2Time() / channelinfo.getSlotTime());
 
 		this.channelinfo = channelinfo;
-		this.monitor=monitor;
+		this.monitor=Monitor.instance;
 
 		//TODO: make a separate storage object for each channel
-		this.storage=storage;
+		this.storage=Storage.instance;
 
 	}
 
@@ -87,7 +96,7 @@ public abstract class ChannelService  {
 		status.setEventid(channelid);
 		status.setCurrentpos(currentpos.get());
 		status.setStarttime(starttime);
-		status.setTimeslot_period(timeslot_period.get());
+		status.setTimeslot_period(slotTime.get());
 		status.setTimeframes(timeframes.size());
 		status.setHits(hits.get());
 
@@ -141,9 +150,9 @@ public abstract class ChannelService  {
 				while (!stopthread.get()) {
 					try {
 
-						System.out.println("calculate " + timeslot_period.get());
+						System.out.println("calculate " + slotTime.get());
 						calculate();
-						start = start + timeslot_period.get();
+						start = start + slotTime.get();
 						long wait = start - System.currentTimeMillis();
 						System.out.println("wait " + wait);
 
@@ -165,9 +174,7 @@ public abstract class ChannelService  {
 		if(!timeframes.containsKey(session.getDelay())) {
 			timeframes.put(session.getDelay(), new TimeFrame(this,session.getDelay()));
 		}
-		if(!channelinfo.getTeams().containsKey(session.getTeam())) {
-			initTeam(channelinfo.createTeam(session.getTeam()));
-		}
+
 		timeframes.get(session.getDelay()).addUser(session);
 
 	}

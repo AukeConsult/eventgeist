@@ -1,7 +1,6 @@
 package no.auke.mg.services;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,61 +11,60 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import no.auke.mg.channel.ResultSlot;
 import no.auke.mg.channel.models.ChannelInfo;
 import no.auke.mg.channel.models.ChannelStatus;
-import no.auke.mg.channel.models.Team;
+import no.auke.mg.channel.models.EventInfo;
 
 public abstract class Storage {
 
-	protected Map<String,ChannelInfo> channel = new ConcurrentHashMap<String,ChannelInfo>();
-	protected Map<String,ChannelStatus> channelstatuses = new ConcurrentHashMap<String,ChannelStatus>();
+	public static Storage instance;
 
+	protected Map<String,EventInfo> events = new ConcurrentHashMap<String,EventInfo>();
+	protected Map<String,ChannelInfo> channels = new ConcurrentHashMap<String,ChannelInfo>();
+	protected Map<String,Map<Long,ResultSlot>> slots = new HashMap<String,Map<Long,ResultSlot>>();
+
+	protected Queue<EventInfo> save_events = new ConcurrentLinkedQueue<EventInfo>();
 	protected Queue<ChannelInfo> save_channels = new ConcurrentLinkedQueue<ChannelInfo>();
 	protected Queue<ChannelStatus> save_channelstatuses = new ConcurrentLinkedQueue<ChannelStatus>();
 	protected Queue<ResultSlot> save_slots = new ConcurrentLinkedQueue<ResultSlot>();
-	protected Map<String,Map<Long,ResultSlot>> slots = new HashMap<String,Map<Long,ResultSlot>>();
 
 	public ChannelInfo getChannel(String channelid) {
 
-		if(!channel.containsKey(channelid)) {
-
+		if(!channels.containsKey(channelid)) {
 			ChannelInfo info = readhannel(channelid);
 			if(info==null) {
-
-				info = new ChannelInfo(channelid);
-
-				info.setType("football");
-
-				info.setTimeslot_period(2000);
-				info.setAvg1time(1000*15);
-				info.setName("Navnet er " + channelid);
-
-				Calendar cal = Calendar.getInstance();
-				info.setStart(cal.getTime());
-				cal.add(Calendar.HOUR, 3);
-				info.setStop(cal.getTime());
-
-				info.getTeams().put("team1", new Team("team1","dette er team 1",""));
-				info.getTeams().put("team2", new Team("team2","dette er team 2",""));
-				info.getProps().put("bilde", null);
-				info.getProps().put("kampfakta", "sasfasdasd");
-				info.getProps().put("osv1", "osv");
-				info.getProps().put("osv2", "osv");
-
+				info = ChannelInfo.create(channelid);
 			}
-
-			channel.put(info.getChannelid(), info);
-			saveChannel(info);
+			channels.put(info.getChannelid(), info);
+			saveChannelInfo(info);
 		}
-		return channel.get(channelid);
+		return channels.get(channelid);
 	}
 
-	public void saveChannel(ChannelInfo channelinfo) {
-		channel.put(channelinfo.getChannelid(), channelinfo);
+	public void saveChannelInfo(ChannelInfo channelinfo) {
+		channels.put(channelinfo.getChannelid(), channelinfo);
 		save_channels.add(channelinfo);
+		doSave();
 	}
 
 	public void saveChannelStatus(ChannelStatus status) {
-		channelstatuses.put(status.getChannelid(), status);
 		save_channelstatuses.add(status);
+		doSave();
+	}
+
+	public boolean hasEventInfo(String eventid) {
+		return events.containsKey(eventid);
+	}
+	public EventInfo getEventInfo(String eventid) {
+		if(events.containsKey(eventid)) {
+			return events.get(eventid);
+		} else {
+			return null;
+		}
+	}
+	public EventInfo saveEventInfo(EventInfo event) {
+		events.put(event.getEventid(), event);
+		save_events.add(event);
+		doSave();
+		return event;
 	}
 
 	public void saveSlot(ResultSlot slot) {
@@ -86,16 +84,21 @@ public abstract class Storage {
 		return slots.get(channelid).get(slotpos);
 	}
 
-	public List<ResultSlot> getResultSlots() {return new ArrayList<ResultSlot>(save_slots);}
+	public List<ResultSlot> getResultSlots(String channelid) {
+		if(slots.containsValue(channelid)) {
+			return new ArrayList<ResultSlot>(slots.get(channelid).values());
+		} else {
+			return new ArrayList<ResultSlot>();
+		}
+	}
 
+	public void init() {}
 	public abstract void doSave();
 	public abstract void readAll();
 	public abstract ChannelInfo readhannel(String channelid);
 	public abstract List<ResultSlot> readSlots(String channelid, int slotpos);
 
-	public void init() {
-		// TODO Auto-generated method stub
-	}
+
 
 
 }

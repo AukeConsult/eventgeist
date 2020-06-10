@@ -1,4 +1,4 @@
-package no.auke.mg.channel.impl;
+package no.auke.mg.services.impl;
 
 import java.io.File;
 import java.util.List;

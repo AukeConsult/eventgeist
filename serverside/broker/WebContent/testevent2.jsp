@@ -122,9 +122,10 @@ String uri = request.getServerName() +
 	<div id="match" visible=true>
 		
 		<form>
-			<input type="radio" name="choice" value="team1"> team 1
-	        <input type="radio" name="choice" value="team2"> team 2
+			<input onclick="start()" type="radio" name="choice" value="team1"> team 1
+	        <input onclick="start()" type="radio" name="choice" value="team2"> team 2
 	        <input type="button" id="btn" value="Start event">				
+	        <input type="button" id="btn-clean" value="remove output">				
 		</form>
 		
 		<br>
@@ -145,9 +146,8 @@ String uri = request.getServerName() +
 
 		<script type="text/javascript">
 		
-			const btn = document.getElementById("btn");
-			
-			btn.onclick = function () {
+			function start() {
+				
 	            const rbs = document.querySelectorAll('input[name="choice"]');
 	            let selectedTeam;
 	            for (const rb of rbs) {
@@ -163,14 +163,23 @@ String uri = request.getServerName() +
 						selectedTeam
 			
 				)		
-				
+								
+			}
+		
+			const btn = document.getElementById("btn");
+			const btn-clean = document.getElementById("btn-clean");
+
+			btn.onclick = function () {
+				start();
+			};
+		
+			btn-clean.onclick = function () {
 				const output = document.getElementById("output");
   				while (output.firstChild) {
   					output.removeChild(output.lastChild);
  				}
-			
-			};
-		
+				
+			}
 		
 		</script>
 

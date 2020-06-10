@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import no.auke.mg.channel.ChannelService;
 import no.auke.mg.channel.ResultSlot;
 import no.auke.mg.channel.UserSession;
+import no.auke.mg.channel.impl.football.FootballChannel;
 import no.auke.mg.channel.models.ChannelInfo;
-import no.auke.mg.channelimpl.football.FootballChannel;
 import no.auke.mg.services.Storage;
 
 @RunWith(PowerMockRunner.class)
@@ -67,7 +67,10 @@ public class MassProdTest {
 		monitor = new TestJsonMonitor();
 		storage = new TestStorage();
 
-		channel = new FootballChannel(new ChannelInfo("test"), monitor, storage);
+		ChannelInfo info = ChannelInfo.create("test");
+		storage.saveChannelInfo(info);
+
+		channel = new FootballChannel(info);
 		channel.init();
 
 	}

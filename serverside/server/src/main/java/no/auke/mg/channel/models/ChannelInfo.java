@@ -1,15 +1,10 @@
 package no.auke.mg.channel.models;
 
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ChannelInfo {
-
-	private String id;
-	public String getId() {return id;}
-	public void setId(String id) {this.id = id;}
 
 	private String channelid;
 	public String getChannelid() {return channelid;}
@@ -27,10 +22,6 @@ public class ChannelInfo {
 	public String getName() {return name;}
 	public void setName(String name) {this.name = name;}
 
-	private String tags;
-	public String getTags() {return tags;}
-	public void setTags(String eventtags) {this.tags = tags;}
-
 	private Date start;
 	public Date getStart() {return start;}
 	public void setStart(Date start) {this.start = start;}
@@ -39,17 +30,17 @@ public class ChannelInfo {
 	public Date getStop() {return stop;}
 	public void setStop(Date stop) {this.stop = stop;}
 
-	private int timeslot_period=2000;
-	public int getTimeslot_period() {return timeslot_period;}
-	public void setTimeslot_period(int timeslot_period) {this.timeslot_period = timeslot_period;}
+	private int slotTime = 2000;
+	public int getSlotTime() {return slotTime;}
+	public void setSlotTime(int slotTime) {this.slotTime=slotTime;}
 
-	public int avg1time=1000*15;
-	public int getAvg1time() {return avg1time;}
-	public void setAvg1time(int avg1time) {this.avg1time = avg1time;}
+	public int avg1Time = 1000*15;
+	public int getAvg1Time() {return avg1Time;}
+	public void setAvg1Time(int avg1Time) {this.avg1Time=avg1Time;}
 
-	private Map<String, Team> teams = new HashMap<String,Team>();
-	public Map<String, Team> getTeams() {return teams;}
-	public void setTeams(Map<String, Team> teams) {this.teams = teams;}
+	public int avg2Time = 1000*60;
+	public int getAvg2Time() {return avg2Time;}
+	public void setAvg2Time(int avg2Time) {this.avg2Time=avg2Time;}
 
 	// Process information
 	private String server;
@@ -60,18 +51,29 @@ public class ChannelInfo {
 	public List<String> getBrokers() {return brokers;}
 	public void setBrokers(List<String> brokers) {this.brokers = brokers;}
 
-	private Map<String, Object> props;
-	public Map<String, Object> getProps() {return props;}
-	public void setProps(Map<String, Object> props) {this.props = props;}
-
 	// constr
-	public ChannelInfo(String channelid) {
-		this.channelid=channelid;
-	}
-	public Team createTeam(String teamid) {
-		Team team = new Team(teamid);
-		teams.put(teamid, team);
-		return team;
+	public ChannelInfo() {}
+
+	public static ChannelInfo create(String channelid) {
+
+		ChannelInfo info = new ChannelInfo();
+
+		info.setChannelid(channelid);
+		info.setType("ST");
+
+		info.setSlotTime(2000);
+		info.setAvg1Time(1000*15);
+		info.setAvg2Time(1000*60);
+
+		info.setName("Navnet er " + channelid);
+
+		Calendar cal = Calendar.getInstance();
+		info.setStart(cal.getTime());
+		cal.add(Calendar.HOUR, 3);
+		info.setStop(cal.getTime());
+
+		return info;
+
 	}
 
 }

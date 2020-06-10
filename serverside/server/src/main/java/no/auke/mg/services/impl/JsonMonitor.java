@@ -1,4 +1,4 @@
-package no.auke.mg.services;
+package no.auke.mg.services.impl;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.auke.mg.channel.TimeFrame;
 import no.auke.mg.channel.UserSession;
 import no.auke.mg.channel.feedbacks.FeedBack;
+import no.auke.mg.services.Monitor;
 
 public abstract class JsonMonitor extends Monitor {
 

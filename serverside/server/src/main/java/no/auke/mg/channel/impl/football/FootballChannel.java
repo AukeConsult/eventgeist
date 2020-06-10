@@ -1,4 +1,4 @@
-package no.auke.mg.channelimpl.football;
+package no.auke.mg.channel.impl.football;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -8,15 +8,22 @@ import no.auke.mg.channel.ChannelService;
 import no.auke.mg.channel.ResultSlot;
 import no.auke.mg.channel.UserSession;
 import no.auke.mg.channel.models.ChannelInfo;
+import no.auke.mg.channel.models.EventInfo;
 import no.auke.mg.channel.models.Team;
-import no.auke.mg.services.Monitor;
-import no.auke.mg.services.Storage;
 
 public class FootballChannel extends ChannelService {
 
 	//TODO: remove calculator (this) from channel service
-	public FootballChannel(ChannelInfo channelid, Monitor monitor, Storage storage) {
-		super(channelid, monitor,storage);
+	public FootballChannel(ChannelInfo channelinfo) {
+		super(channelinfo);
+
+		EventInfo eventinfo = getStorage().getEventInfo(channelinfo.getEventid());
+		if(eventinfo==null) {
+			eventinfo = EventInfo.create(channelinfo.getEventid());
+			eventinfo.setType("football");
+		}
+		getStorage().saveEventInfo(eventinfo);
+
 	}
 
 	@Override
@@ -82,13 +89,13 @@ public class FootballChannel extends ChannelService {
 
 		FootballFeedback total_hist=null;
 
-		int num_hist1=0;
-		for(ResultSlot slothist:new ArrayList<ResultSlot>(history1)) {
+		double num_hist1=0;
+		for(ResultSlot hist_slot:new ArrayList<ResultSlot>(history1)) {
 
 			num_hist1++;
-			if(slothist.feedback!=null) {
+			if(hist_slot.feedback!=null) {
 
-				FootballFeedback res_hist = (FootballFeedback) slothist.feedback;
+				FootballFeedback res_hist = (FootballFeedback) hist_slot.feedback;
 				if(res_hist.teamwork!=null) {
 
 					// total pr team
@@ -118,13 +125,13 @@ public class FootballChannel extends ChannelService {
 			}
 		}
 
-		int num_hist2=0;
-		for(ResultSlot slothist:new ArrayList<ResultSlot>(history2)) {
+		double num_hist2=0;
+		for(ResultSlot hist_slot:new ArrayList<ResultSlot>(history2)) {
 
 			num_hist2++;
-			if(slothist.feedback!=null) {
+			if(hist_slot.feedback!=null) {
 
-				FootballFeedback res_hist = (FootballFeedback) slothist.feedback;
+				FootballFeedback res_hist = (FootballFeedback) hist_slot.feedback;
 				if(res_hist.teamwork!=null) {
 
 					// total pr team
@@ -170,22 +177,22 @@ public class FootballChannel extends ChannelService {
 					current.teamwork.put(key_team, new Teamres(key_team));
 				}
 
-				Teamres hist1_total = total_hist.teamwork.get(key_team);
+				Teamres hist_total = total_hist.teamwork.get(key_team);
 				Teamres current_res = current.teamwork.get(key_team);
 
-				current_res.totwork.avg1 = Math.round(hist1_total.totwork.avg1 / num_hist1 * 100.0) / 100.0;
-				current_res.totwork.avg2 = Math.round(hist1_total.totwork.avg2 / num_hist2 * 100.0) / 100.0;
+				current_res.totwork.avg1 = Math.round(hist_total.totwork.avg1 / num_hist1 * 10000.0) / 10000.0;
+				current_res.totwork.avg2 = Math.round(hist_total.totwork.avg2 / num_hist2 * 10000.0) / 10000.0;
 
 				if(current_res.totwork.avg1>0 || current_res.totwork.avg2>0) {
 					slot.isresult=true;
 				}
 
-				for(String keybtn:hist1_total.btnwork.keySet()){
+				for(String keybtn:hist_total.btnwork.keySet()){
 					if(!current_res.btnwork.containsKey(keybtn)){
 						current_res.btnwork.put(keybtn, new Measure(keybtn));
 					}
-					current_res.btnwork.get(keybtn).avg1 = Math.round(hist1_total.btnwork.get(keybtn).avg1 / num_hist1 * 100.0) / 100.0;
-					current_res.btnwork.get(keybtn).avg2 = Math.round(hist1_total.btnwork.get(keybtn).avg2 / num_hist2 * 100.0) / 100.0;
+					current_res.btnwork.get(keybtn).avg1 = Math.round(hist_total.btnwork.get(keybtn).avg1 / num_hist1 * 10000.0) / 10000.0;
+					current_res.btnwork.get(keybtn).avg2 = Math.round(hist_total.btnwork.get(keybtn).avg2 / num_hist2 * 10000.0) / 10000.0;
 					if(current_res.btnwork.get(keybtn).avg1>0 || current_res.btnwork.get(keybtn).avg2>0) {
 						slot.isresult=true;
 					}

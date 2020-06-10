@@ -8,6 +8,10 @@ import no.auke.mg.services.Storage;
 
 public class TestStorage extends Storage {
 
+	public TestStorage() {
+		Storage.instance=this;
+	}
+
 	@Override
 	public void doSave() {
 		// TODO Auto-generated method stub

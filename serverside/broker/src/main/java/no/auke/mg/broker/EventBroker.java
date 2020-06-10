@@ -8,9 +8,10 @@ import javax.websocket.Session;
 
 import no.auke.mg.channel.ChannelService;
 import no.auke.mg.channel.UserSession;
-import no.auke.mg.channel.impl.FileSysStorage;
+import no.auke.mg.channel.impl.football.FootballChannel;
 import no.auke.mg.channel.models.ChannelInfo;
-import no.auke.mg.channelimpl.football.FootballChannel;
+import no.auke.mg.eventapi.EventApi;
+import no.auke.mg.services.Monitor;
 import no.auke.mg.services.Storage;
 
 public class EventBroker {
@@ -20,11 +21,11 @@ public class EventBroker {
 	private static Map<String, ChannelService> channels = new ConcurrentHashMap<String, ChannelService>();
 	private static Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 
-	private static int timeslot_period_default=2000;
 	public static String reportDir="";
 
 	public static WsMonitor monitor;
 	public static Storage storage;
+	public static EventApi eventapi;
 
 	private EventBroker() {}
 
@@ -38,21 +39,20 @@ public class EventBroker {
 
 				// get eventifo
 
-				ChannelInfo info = new ChannelInfo(eventid.trim());
-				info.setChannelid(eventid.trim());
-				info.setType(eventtype.trim());
-				info.setTimeslot_period(timeslot_period_default);
+				ChannelInfo channellinfo = ChannelInfo.create(eventid);
+				channellinfo.setType(eventtype);
+				channellinfo.setEventid(eventid);
 
 				// check what type of channel
-				if(info.equals("football")) {
-					channels.put(info.getChannelid(), new FootballChannel(info, monitor,storage));
-				} else {
-					channels.put(info.getChannelid(), new FootballChannel(info, monitor,storage));
+				if(eventtype.equals("football")) {
+					channels.put(channellinfo.getChannelid(), new FootballChannel(channellinfo));
 				}
+				storage.saveChannelInfo(channellinfo);
 
 				// read channel info
 				// initialize and start channel
-				channels.get(info.getChannelid()).init();
+				channels.get(channellinfo.getChannelid()).init();
+
 
 			}
 
@@ -94,10 +94,16 @@ public class EventBroker {
 
 			//reportDir = System.getProperty("user.dir") + "/channel/";
 			instance = new EventBroker();
+
 			monitor = new WsMonitor();
 			monitor.init();
-			storage = new FileSysStorage(reportDir);
+			Monitor.instance = monitor;
+
+			storage = new no.auke.mg.services.impl.FileSysStorage(reportDir);
 			storage.init();
+			Storage.instance=storage;
+
+
 
 		}
 

@@ -19,16 +19,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import no.auke.mg.channel.ChannelService;
 import no.auke.mg.channel.ResultSlot;
 import no.auke.mg.channel.UserSession;
+import no.auke.mg.channel.impl.football.FootballChannel;
+import no.auke.mg.channel.impl.football.FootballFeedback;
 import no.auke.mg.channel.models.ChannelInfo;
-import no.auke.mg.channelimpl.football.FootballChannel;
-import no.auke.mg.channelimpl.football.FootballFeedback;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "no.auke.mg.*")
 public class FootballTest {
 
 	final static Logger log = LoggerFactory.getLogger(FootballTest.class);
-
 
 	ChannelService channel;
 
@@ -38,7 +37,10 @@ public class FootballTest {
 	@Before
 	public void start() {
 
-		channel = new FootballChannel(new ChannelInfo("test"), monitor, storage);
+		ChannelInfo info = ChannelInfo.create("test");
+		storage.saveChannelInfo(info);
+
+		channel = new FootballChannel(info);
 		channel.init();
 		channel.stop();
 
@@ -66,8 +68,8 @@ public class FootballTest {
 		}
 		channel.calculate();
 
-		Assert.assertTrue(storage.getResultSlots().size()==1);
-		FootballFeedback result = (FootballFeedback) storage.getResultSlots().get(0).feedback;
+		Assert.assertTrue(storage.getResultSlots("test").size()==1);
+		FootballFeedback result = (FootballFeedback) storage.getResultSlots("test").get(0).feedback;
 
 		Assert.assertNotNull(result.teamwork.get("team1"));
 		Assert.assertNotNull(result.teamwork.get("team2"));
@@ -96,8 +98,8 @@ public class FootballTest {
 		channel.calculate();
 		Assert.assertTrue(monitor.getSend_frames().size()==1);
 
-		Assert.assertTrue(storage.getResultSlots().size()==1);
-		FootballFeedback result = (FootballFeedback) storage.getResultSlots().get(0).feedback;
+		Assert.assertTrue(storage.getResultSlots("test").size()==1);
+		FootballFeedback result = (FootballFeedback) storage.getResultSlots("test").get(0).feedback;
 
 		Assert.assertNotNull(result.teamwork.get("team1"));
 		Assert.assertNotNull(result.teamwork.get("team2"));
@@ -122,12 +124,11 @@ public class FootballTest {
 		}
 		channel.calculate();
 		Assert.assertTrue(monitor.getSend_frames().size()==1);
-		Assert.assertTrue(storage.getResultSlots().size()==1);
+		Assert.assertTrue(storage.getResultSlots("test").size()==1);
 
-		FootballFeedback result = (FootballFeedback) storage.getResultSlots().get(0).feedback;
+		FootballFeedback result = (FootballFeedback) storage.getResultSlots("test").get(0).feedback;
 		Assert.assertNotNull(result);
 		monitor.print();
-
 
 	}
 
@@ -142,8 +143,8 @@ public class FootballTest {
 		}
 		channel.calculate();
 
-		Assert.assertTrue(storage.getResultSlots().size()==1);
-		FootballFeedback result = (FootballFeedback) storage.getResultSlots().get(0).feedback;
+		Assert.assertTrue(storage.getResultSlots("test").size()==1);
+		FootballFeedback result = (FootballFeedback) storage.getResultSlots("test").get(0).feedback;
 		Assert.assertNotNull(result.teamwork.get("team1"));
 		Assert.assertNotNull(result.teamwork.get("team2"));
 
@@ -227,11 +228,11 @@ public class FootballTest {
 				}
 			}
 			channel.calculate();
-			Assert.assertTrue(storage.getResultSlots().size()>0);
+			Assert.assertTrue(storage.getResultSlots("test").size()>0);
 			monitor.print();
 
 		}
-		for(ResultSlot slot:storage.getResultSlots()) {
+		for(ResultSlot slot:storage.getResultSlots("test")) {
 			Assert.assertNotNull(slot.feedback);
 		}
 		for(int i=0;i<30;i++) {
