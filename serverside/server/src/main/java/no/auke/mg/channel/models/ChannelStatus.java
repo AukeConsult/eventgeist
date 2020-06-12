@@ -35,7 +35,11 @@ public class ChannelStatus extends PersistObject {
 
 	@Override
 	public String getPersistName() {
-		return getChannelid() + "-" + getCurrentpos() + "-" + getCurrenttime();
+		return getChannelid();
+	}
+	@Override
+	public String getPersistDir() {
+		return "";
 	}
 
 }

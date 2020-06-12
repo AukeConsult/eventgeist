@@ -5,16 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.auke.mg.channel.feedbacks.FeedBack;
+import no.auke.mg.channel.models.PersistObject;
 
-public class ResultSlot {
-
-	public ResultSlot() {}
+public class ResultSlot extends PersistObject {
 
 	public String channelid;
 	public String eventid;
 
 	public long pos;
-	public long currenttime = System.currentTimeMillis();
+	public long time = System.currentTimeMillis();
 	public boolean isresult=false;
 	public FeedBack feedback;
 
@@ -30,6 +29,16 @@ public class ResultSlot {
 		Status sts = new Status(type, userid, js);
 		statuslist.add(sts);
 		return sts;
+	}
+
+	@Override
+	public String getPersistName() {
+		return String.valueOf(pos);
+	}
+
+	@Override
+	public String getPersistDir() {
+		return channelid + "/" + String.valueOf(pos / 1000);
 	}
 
 }

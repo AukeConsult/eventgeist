@@ -4,36 +4,24 @@ import java.util.List;
 
 import no.auke.mg.channel.ResultSlot;
 import no.auke.mg.channel.models.ChannelInfo;
+import no.auke.mg.channel.models.ChannelStatus;
+import no.auke.mg.channel.models.EventInfo;
 import no.auke.mg.services.Storage;
 
 public class TestStorage extends Storage {
-
-	public TestStorage() {
-		Storage.instance=this;
-	}
-
+	public TestStorage() {Storage.instance=this;}
 	@Override
-	public void doSave() {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void doSave() {}
 	@Override
-	public void readAll() {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void readAll() {}
 	@Override
-	public ChannelInfo readhannel(String eventid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	public void init() {}
 	@Override
-	public List<ResultSlot> readSlots(String eventid, int slotpos) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	public ChannelStatus readChannelStatus(String channelid) {return null;}
+	@Override
+	public ChannelInfo readChannelInfo(String channelid) {return null;}
+	@Override
+	public EventInfo readEventInfo(String eventid) {return null;}
+	@Override
+	public List<ResultSlot> readSlots(String channelid, int slotpos_from, int slotpos_to) {return null;}
 }

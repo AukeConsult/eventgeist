@@ -1,6 +1,7 @@
-package no.auke.mg.services;
+package no.auke.mg.api;
 
 import no.auke.mg.channel.models.EventInfo;
+import no.auke.mg.services.Storage;
 
 public class EventApi {
 

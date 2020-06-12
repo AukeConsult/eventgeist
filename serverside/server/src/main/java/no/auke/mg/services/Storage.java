@@ -27,9 +27,8 @@ public abstract class Storage {
 	protected Queue<Object> save_slots = new ConcurrentLinkedQueue<Object>();
 
 	public ChannelInfo getChannel(String channelid) {
-
 		if(!channels.containsKey(channelid)) {
-			ChannelInfo info = readhannel(channelid);
+			ChannelInfo info = readChannelInfo(channelid);
 			if(info==null) {
 				info = ChannelInfo.create(channelid);
 			}
@@ -54,12 +53,17 @@ public abstract class Storage {
 		return events.containsKey(eventid);
 	}
 	public EventInfo getEventInfo(String eventid) {
-		if(events.containsKey(eventid)) {
-			return events.get(eventid);
-		} else {
-			return null;
+		if(!events.containsKey(eventid)) {
+			EventInfo info = readEventInfo(eventid);
+			if(info == null) {
+				info = EventInfo.create(eventid);
+				events.put(info.getEventid(), info);
+				saveEventInfo(info);
+			}
 		}
+		return events.get(eventid);
 	}
+
 	public EventInfo saveEventInfo(EventInfo event) {
 		events.put(event.getEventid(), event);
 		save_events.add(event);
@@ -92,13 +96,13 @@ public abstract class Storage {
 		}
 	}
 
-	public void init() {}
+	public abstract void init();
 	public abstract void doSave();
 	public abstract void readAll();
-	public abstract ChannelInfo readhannel(String channelid);
-	public abstract List<ResultSlot> readSlots(String channelid, int slotpos);
 
-
-
+	public abstract ChannelStatus readChannelStatus(String channelid);
+	public abstract ChannelInfo readChannelInfo(String channelid);
+	public abstract EventInfo readEventInfo(String eventid);
+	public abstract List<ResultSlot> readSlots(String channelid, int slotpos_from, int slotpos_to);
 
 }

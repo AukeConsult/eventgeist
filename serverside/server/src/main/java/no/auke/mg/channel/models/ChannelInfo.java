@@ -6,17 +6,21 @@ import java.util.List;
 
 public class ChannelInfo extends PersistObject {
 
+	private String id;
+	public String getId() {return id;}
+	public void setId(String id) {this.id = id;}
+
 	private String channelid;
 	public String getChannelid() {return channelid;}
 	public void setChannelid(String channelid) {this.channelid = channelid;}
 
-	private String eventid;
-	public String getEventid() {return eventid;}
-	public void setEventid(String eventid) {this.eventid = eventid;}
-
 	private String type;
 	public String getType() {return type;}
 	public void setType(String type) {this.type=type;}
+	
+	private String eventid;
+	public String getEventid() {return eventid;}
+	public void setEventid(String eventid) {this.eventid = eventid;}
 
 	private String name;
 	public String getName() {return name;}
@@ -79,6 +83,10 @@ public class ChannelInfo extends PersistObject {
 	@Override
 	public String getPersistName() {
 		return getChannelid();
+	}
+	@Override
+	public String getPersistDir() {
+		return getType();
 	}
 
 }

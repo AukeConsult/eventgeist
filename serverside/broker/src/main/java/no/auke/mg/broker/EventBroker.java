@@ -10,7 +10,7 @@ import no.auke.mg.channel.ChannelService;
 import no.auke.mg.channel.UserSession;
 import no.auke.mg.channel.impl.football.FootballChannel;
 import no.auke.mg.channel.models.ChannelInfo;
-import no.auke.mg.eventapi.EventApi;
+import no.auke.mg.rest.EventApi;
 import no.auke.mg.services.Monitor;
 import no.auke.mg.services.Storage;
 
@@ -89,10 +89,11 @@ public class EventBroker {
 		if (instance == null) {
 
 			// read parameters
-			reportDir="C:/projects/tmp_testoutput/channel/";
+			reportDir="C:/projects/evstorage/";
 			new File(reportDir).mkdir();
 
 			//reportDir = System.getProperty("user.dir") + "/channel/";
+
 			instance = new EventBroker();
 
 			monitor = new WsMonitor();
@@ -102,8 +103,6 @@ public class EventBroker {
 			storage = new no.auke.mg.services.impl.FileSysStorage(reportDir);
 			storage.init();
 			Storage.instance=storage;
-
-
 
 		}
 

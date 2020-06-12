@@ -27,9 +27,7 @@ public class Team extends PersistObject {
 
 	}
 
-	public Team(String teamid) {
-		this.teamid=teamid;
-	}
+	public Team(String teamid) {this.teamid=teamid;}
 
 	public String getTeamid() {return teamid;}
 	public void setTeamid(String teamid) {this.teamid = teamid;}
@@ -48,7 +46,11 @@ public class Team extends PersistObject {
 
 	@Override
 	public String getPersistName() {
-		return getType() + "/" + getTeamid();
+		return getTeamid();
+	}
+	@Override
+	public String getPersistDir() {
+		return getType();
 	}
 
 

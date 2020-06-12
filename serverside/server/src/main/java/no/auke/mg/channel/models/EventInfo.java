@@ -2,6 +2,7 @@ package no.auke.mg.channel.models;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EventInfo extends PersistObject {
@@ -46,6 +47,10 @@ public class EventInfo extends PersistObject {
 	public Map<String, Object> getProps() {return props;}
 	public void setProps(Map<String, Object> props) {this.props = props;}
 
+	private List<String> brokers;
+	public List<String> getBrokers() {return brokers;}
+	public void setBrokers(List<String> brokers) {this.brokers = brokers;}
+
 	@Override
 	public String getPersistName() {
 		return getEventid();
@@ -58,8 +63,8 @@ public class EventInfo extends PersistObject {
 		info.setEventid(eventid);
 		info.setName("testname");
 
-		info.getTeams().put("team1", new Team("stg","dette er team 1","football"));
-		info.getTeams().put("team2", new Team("brn","dette er team 2","football"));
+		info.getTeams().put("team1", new Team("stg","dette er team 1","fotball"));
+		info.getTeams().put("team2", new Team("brn","dette er team 2","fotball"));
 
 		info.getProps().put("bilde", null);
 		info.getProps().put("kampfakta", "sasfasdasd");
@@ -68,6 +73,10 @@ public class EventInfo extends PersistObject {
 
 		return info;
 
+	}
+	@Override
+	public String getPersistDir() {
+		return getType();
 	}
 
 }

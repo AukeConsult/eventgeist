@@ -28,14 +28,13 @@ public class FileSysStorageTest {
 	@Before
 	public void start() {
 
-		ChannelInfo info = ChannelInfo.create("test");
 
 		String userDir = System.getProperty("user.dir");
 
-		storage=new FileSysStorage(userDir+"\\test_storage");
+		storage=new FileSysStorage(userDir+"/test_storage");
 
+		ChannelInfo info = ChannelInfo.create("test");
 		storage.saveChannelInfo(info);
-
 		channel = new FootballChannel(info);
 		channel.init();
 		channel.stop();
@@ -52,9 +51,7 @@ public class FileSysStorageTest {
 
 	@Test
 	public void test_create_channels() {
-
 		System.out.println("test_create_channels");
-
 	}
 
 }
