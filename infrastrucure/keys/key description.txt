@@ -1,0 +1,7 @@
+
+Keys
+
+mg-dev.pem	openssh private key to mg user on all servers
+mg-dev.ppk	windows (putty) private key to mg user on all servers
+mg-dev.pub	public keys installed on servers
+

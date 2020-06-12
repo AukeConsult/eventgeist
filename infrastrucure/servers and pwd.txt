@@ -1,0 +1,17 @@
+Server and infrastructure documentation
+
+Main test server
+
+89.221.242.36
+user: auke (admin)
+pwd: #gtx123#
+
+user: mg
+pwd: #ev123#
+
+Sftp til server: 
+sftp mg@89.221.242.36 
+
+User mg continans broker storage (database for system) 
+Broker storage catalog	/mg-storage
+

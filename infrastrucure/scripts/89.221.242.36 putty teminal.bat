@@ -1,0 +1,1 @@
+start bin\putty -ssh -i keys\mg-dev.ppk mg@89.221.242.36
