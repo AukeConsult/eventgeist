@@ -17,7 +17,7 @@ public class ChannelInfo extends PersistObject {
 	private String type;
 	public String getType() {return type;}
 	public void setType(String type) {this.type=type;}
-	
+
 	private String eventid;
 	public String getEventid() {return eventid;}
 	public void setEventid(String eventid) {this.eventid = eventid;}
@@ -63,7 +63,7 @@ public class ChannelInfo extends PersistObject {
 		ChannelInfo info = new ChannelInfo();
 
 		info.setChannelid(channelid);
-		info.setType("ST");
+		info.setType("standard");
 
 		info.setSlotTime(2000);
 		info.setAvg1Time(1000*15);

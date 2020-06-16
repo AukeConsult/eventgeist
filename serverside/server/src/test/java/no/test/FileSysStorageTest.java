@@ -9,9 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import no.auke.mg.channel.ChannelService;
-import no.auke.mg.channel.UserSession;
-import no.auke.mg.channel.impl.football.FootballChannel;
-import no.auke.mg.channel.models.ChannelInfo;
 import no.auke.mg.services.impl.FileSysStorage;
 
 @RunWith(PowerMockRunner.class)
@@ -33,6 +30,7 @@ public class FileSysStorageTest {
 
 		storage=new FileSysStorage(userDir+"/test_storage");
 
+		/*
 		ChannelInfo info = ChannelInfo.create("test");
 		storage.saveChannelInfo(info);
 		channel = new FootballChannel(info);
@@ -46,12 +44,18 @@ public class FileSysStorageTest {
 			channel.addUser(new UserSession(String.valueOf(i), channel, "leify" + i, "team2", "", 0));
 		}
 		storage.doSave();
+		 */
 
 	}
 
 	@Test
 	public void test_create_channels() {
 		System.out.println("test_create_channels");
+		for(int i=0;i<10;i++) {
+			storage.getChannel("channel"+i);
+		}
+		storage.doSave();
+
 	}
 
 }

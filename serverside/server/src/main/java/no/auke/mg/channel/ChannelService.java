@@ -134,6 +134,23 @@ public abstract class ChannelService  {
 		}).start();
 		 */
 
+		// collect responses
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				long start=System.currentTimeMillis();
+				while (!stopthread.get()) {
+					try {
+						System.out.println("collect " + slotTime.get());
+						collect();
+						Thread.sleep(slotTime.get() / 5);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+
 		// Make hart beat and calculate incoming responses pr. timeslot
 		new Thread(new Runnable() {
 			@Override
@@ -181,11 +198,55 @@ public abstract class ChannelService  {
 		return ret;
 	}
 
+	public void collect() {
+
+		for(TimeFrame timeframe:timeframes.values()) {
+
+			Response reponse_collect = new Response();
+			for(UserSession user:timeframe.getUserSessions()) {
+
+				if(user.isOpen() && user.hasResult()) {
+
+					if(!reponse_collect.teams.containsKey(user.getTeam())) {
+						reponse_collect.teams.put(user.getTeam(), new ResponseTeam());
+					}
+					ResponseTeam res = reponse_collect.teams.get(user.getTeam());
+					res.num++;
+
+					for(String response:user.readResponses()) {
+						if(response.startsWith("C#")) {
+							reponse_collect.hasresult=true;
+							String btnkey = response.substring(2);
+							if(btnkey!=null&&btnkey.length()>0) {
+								if(!res.hits.containsKey(btnkey)){
+									res.hits.put(btnkey,new ResponseHits());
+								}
+								res.hits.get(btnkey).num++;
+								res.hits.get(btnkey).val++;
+							}
+						} else if (response.startsWith("M#")) {
+							reponse_collect.msglist.add(user.getUserid() + "#" + response.substring(3));
+							reponse_collect.hasresult=true;
+						} else if (response.startsWith("ST#")) {
+							reponse_collect.statuslist.add(user.getUserid() + "#" + response.substring(3));
+							reponse_collect.hasresult=true;
+						}
+					}
+				}
+			}
+			if(reponse_collect.hasresult) {
+				timeframe.setResponse(reponse_collect);
+			}
+		}
+
+
+	}
+
 	private int cnt_empty=0;
 	private int send_status=0;
 	public void calculate() {
 
-		// hart pulze timer
+		// hart pulse timer
 		currentpos.incrementAndGet();
 		//
 
@@ -204,56 +265,70 @@ public abstract class ChannelService  {
 
 			executeSlotStart(slot);
 
-			for(UserSession user:timeframe.getUserSessions()) {
+			for(Response response:timeframe.readResponses()) {
 
-				if(user.isOpen()) {
+				// Summarize hits
+				for(String team:response.teams.keySet()) {
 
-					executeSlotUser(user, slot);
+					if(!slot.teams.containsKey(team)) {
+						slot.teams.put(team, new ResponseTeam());
+					}
 
-					// NB only read once for each timeslot
-					for(String response:user.readResponses()) {
-						if(response.startsWith("C#")) {
-							executeSlotResponse(response,user,slot);
-						} else if (response.startsWith("M#")) {
-							String[] func = response.split("\\#");
-							if(func.length==3) {
-								if(func[2]!=null && func[2].length()>0) {
-									slot.addMessage(func[1],user.getUserid(), user.getDelay(), func[2]);
-								}
-							} else if(func.length==2) {
-								if(func[1]!=null && func[1].length()>0) {
-									slot.addMessage(null,user.getUserid(), user.getDelay(), func[1]);
-								}
-							}
-						} else if (response.startsWith("ST#")) {
-							if(timeframe.getDelay()==0) {
-								String[] func = response.split("\\#");
-								if(func.length>=3) {
-									Status st = slot.addStatus(func[1], user.getUserid(), func[2]);
-									timeframe.getStatus().put(st.getT(), st);
-								}
-							}
+					ResponseTeam teamres = slot.teams.get(team);
+					teamres.num += response.teams.get(team).num;
+
+					for(String btn:response.teams.get(team).hits.keySet()) {
+						if(!teamres.hits.containsKey(btn)) {
+							teamres.hits.put(btn, new ResponseHits());
+						}
+						teamres.hits.get(btn).val += response.teams.get(team).hits.get(btn).val;
+						teamres.hits.get(btn).num += response.teams.get(team).hits.get(btn).num;
+					}
+				}
+
+				// add messages
+				for(String message:response.msglist) {
+
+					String[] func = message.split("\\#");
+					if(func.length==3) {
+						if(func[2]!=null && func[2].length()>0) {
+							slot.isresult=true;
+							slot.addMessage(func[1],func[0], timeframe.getDelay(), func[2]);
+						}
+					} else if(func.length==2) {
+						if(func[1]!=null && func[1].length()>0) {
+							slot.isresult=true;
+							slot.addMessage(null,func[0], timeframe.getDelay(), func[1]);
 						}
 					}
 
 				}
-			}
 
-			if(slot.msglist.size()>0) {
-				slot.isresult=true;
-				((FeedBackSlot)slot.feedback).msg=slot.msglist;
+				// add statuses
+				for(String status:response.statuslist) {
+					if(timeframe.getDelay()==0) {
+						String[] func = status.split("\\#");
+						if(func.length>=3) {
+							slot.isresult=true;
+							Status st = slot.addStatus(func[1], func[0], func[2]);
+							timeframe.getStatus().put(st.getT(), st);
+						}
+					}
+				}
+
 			}
 
 			send_status--;
 			if(send_status<=0) {
 				if(timeframe.getStatus().size()>0) {
 					slot.isresult=true;
+					slot.statuslist = new ArrayList<Status>(timeframe.getStatus().values());
 					((FeedBackSlot)slot.feedback).st=new ArrayList<Status>(timeframe.getStatus().values());
 				}
 				send_status=9;
 			}
 
-			executeSlotEnd(slot, (int) ((System.currentTimeMillis() - starttime)));
+			executeSlotEnd(timeframe, slot, (int) ((System.currentTimeMillis() - starttime)));
 
 			if(!slot.isresult) {
 				if(cnt_empty>2) {
@@ -282,9 +357,7 @@ public abstract class ChannelService  {
 	}
 
 	protected abstract void executeSlotStart(ResultSlot slot);
-	protected abstract void executeSlotUser(UserSession user, ResultSlot slot);
-	protected abstract void executeSlotResponse(String response, UserSession user, ResultSlot slot);
-	protected abstract void executeSlotEnd(ResultSlot slot, int time);
+	protected abstract void executeSlotEnd(TimeFrame frame, ResultSlot slot, int time);
 
 	protected abstract ResultSlot newResultSlot();
 	protected abstract void initTeam(Team team);

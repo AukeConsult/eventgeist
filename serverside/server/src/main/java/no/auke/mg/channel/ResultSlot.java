@@ -2,7 +2,9 @@
 package no.auke.mg.channel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import no.auke.mg.channel.feedbacks.FeedBack;
 import no.auke.mg.channel.models.PersistObject;
@@ -14,8 +16,12 @@ public class ResultSlot extends PersistObject {
 
 	public long pos;
 	public long time = System.currentTimeMillis();
+
+
 	public boolean isresult=false;
 	public FeedBack feedback;
+
+	public Map<String, ResponseTeam> teams = new HashMap<String, ResponseTeam>();
 
 	public List<Message> msglist = new ArrayList<Message>();
 	public Message addMessage(String type, String userid, int delay, String js) {

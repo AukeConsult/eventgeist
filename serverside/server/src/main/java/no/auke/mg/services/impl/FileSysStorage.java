@@ -22,7 +22,7 @@ public class FileSysStorage extends Storage {
 
 	public FileSysStorage(String location) {
 		this.location=location;
-		new File(location).mkdir();
+		new File(location).mkdirs();
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 	}
 
@@ -34,14 +34,24 @@ public class FileSysStorage extends Storage {
 
 				String location_store = location;
 				PersistObject obj = (PersistObject) queue.poll();
-				new File(location_store).mkdir();
+				if(!new File(location_store).exists()) {
+					if(!new File(location_store).mkdirs()) {
+						System.out.println("can not ccreate directory " + location_store);
+					}
+				}
 
 				if(obj.getPersistDir().length()>0) {
 					location_store = location_store + "/" + obj.getPersistDir();
-					new File(location_store).mkdir();
+					if(!new File(location_store).exists()) {
+						if(!new File(location_store).mkdirs()) {
+							System.out.println("can not create directory " + location_store);
+						}
+					}
 				}
+
 				String filename=location_store + "/" + obj.getPersistName() + fileext;
 				objectMapper.writeValue(new File(filename), obj);
+
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

@@ -20,7 +20,6 @@ public class UserSession {
 	private int delay;
 
 	private AtomicBoolean open= new AtomicBoolean(true);
-	private AtomicBoolean hasresult = new AtomicBoolean(false);
 
 	public String getUserid() {return userid!=null?userid:"";}
 	public String getTeam() {return team;}
@@ -69,8 +68,7 @@ public class UserSession {
 		this.delay=delay;
 	}
 
-	public boolean hasResult() {return hasresult.getAndSet(false);}
-	public void setResponse(String response) {hasresult.set(true);}
+	public boolean hasResult() {return responses.size()>0;}
 	public ChannelService getEvent() {return event;}
 
 	public int getDelay() {return delay;}

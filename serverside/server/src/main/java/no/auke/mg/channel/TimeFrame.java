@@ -1,8 +1,10 @@
 package no.auke.mg.channel;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,6 +26,9 @@ public class TimeFrame {
 	protected Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 	public List<UserSession> getUserSessions() {return new ArrayList<UserSession>(usersessions.values());}
 
+
+	public Queue<ResultSlot> history1 = new LinkedList<ResultSlot>();
+	public Queue<ResultSlot> history2 = new LinkedList<ResultSlot>();
 
 	public TimeFrame(ChannelService channelservice, int delay) {
 		this.channelservice=channelservice;
@@ -60,6 +65,30 @@ public class TimeFrame {
 				channelservice.getStorage().saveSlot(resultslot);
 			}
 			resultslot=null;
+			lock.unlock();
+		}
+	}
+
+	public List<Response> responses = new ArrayList<Response>();
+	public void setResponse(Response response) {
+		try {
+			lock.lock();
+			this.responses.add(response);
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public List<Response> readResponses() {
+		try {
+			lock.lock();
+			if(responses.size()>0) {
+				return new ArrayList<Response>(responses);
+			} else {
+				return null;
+			}
+		} finally {
+			responses.clear();
 			lock.unlock();
 		}
 	}
