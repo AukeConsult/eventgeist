@@ -43,12 +43,12 @@ public class FootballChannel extends ChannelService {
 
 		// sum average 1
 		frame.history1.add(slot);
-		if (frame.history1.size() > 5) {
+		if (frame.history1.size() > getAvg1period()) {
 			frame.history1.poll();
 		}
 
 		frame.history2.add(slot);
-		if (frame.history2.size() > 30) {
+		if (frame.history2.size() > getAvg2period()) {
 			frame.history2.poll();
 		}
 

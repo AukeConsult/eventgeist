@@ -29,4 +29,7 @@ public class TestMonitor extends Monitor {
 			}
 		}
 	}
+	public void clear() {
+		send_frames.clear();
+	}
 }

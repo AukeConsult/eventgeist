@@ -30,8 +30,8 @@ public abstract class ChannelService  {
 	private AtomicLong hits=new AtomicLong();
 	public long getHits() {return hits.get();}
 
-	private AtomicInteger currentpos= new AtomicInteger();
-	public int getCurrentpos() {return currentpos.get();}
+	private AtomicLong currentpos= new AtomicLong();
+	public long getCurrentpos() {return currentpos.get();}
 
 	private AtomicInteger slotTime = new AtomicInteger(2000);
 	public int getSlotTime() {return slotTime.get();}
@@ -70,6 +70,7 @@ public abstract class ChannelService  {
 		this.eventid=channelinfo.getChannelid();
 
 		this.slotTime.set(channelinfo.getSlotTime());
+
 		this.avg1Period.set(channelinfo.getAvg1Time() / channelinfo.getSlotTime());
 		this.avg2Period.set(channelinfo.getAvg2Time() / channelinfo.getSlotTime());
 
@@ -225,8 +226,10 @@ public abstract class ChannelService  {
 								res.hits.get(btnkey).val++;
 							}
 						} else if (response.startsWith("M#")) {
-							reponse_collect.msglist.add(user.getUserid() + "#" + response.substring(3));
-							reponse_collect.hasresult=true;
+							if(response.substring(2).length()>0) {
+								reponse_collect.msglist.add(user.getUserid() + "#" + response.substring(2));
+								reponse_collect.hasresult=true;
+							}
 						} else if (response.startsWith("ST#")) {
 							reponse_collect.statuslist.add(user.getUserid() + "#" + response.substring(3));
 							reponse_collect.hasresult=true;
@@ -242,7 +245,7 @@ public abstract class ChannelService  {
 
 	}
 
-	private int cnt_empty=0;
+	private int cnt_empty=100;
 	private int send_status=0;
 	public void calculate() {
 
@@ -252,7 +255,7 @@ public abstract class ChannelService  {
 
 		for(TimeFrame timeframe:timeframes.values()) {
 
-			int slotpos = currentpos.get() - timeframe.getDelay();
+			long slotpos = (currentpos.get() - timeframe.getDelay());
 
 			ResultSlot slot=null;
 			slot = storage.getSlot(channelid, slotpos - timeframe.getDelay());
@@ -284,6 +287,8 @@ public abstract class ChannelService  {
 						teamres.hits.get(btn).val += response.teams.get(team).hits.get(btn).val;
 						teamres.hits.get(btn).num += response.teams.get(team).hits.get(btn).num;
 					}
+					slot.isresult=true;
+
 				}
 
 				// add messages
@@ -309,42 +314,44 @@ public abstract class ChannelService  {
 					if(timeframe.getDelay()==0) {
 						String[] func = status.split("\\#");
 						if(func.length>=3) {
-							slot.isresult=true;
 							Status st = slot.addStatus(func[1], func[0], func[2]);
 							timeframe.getStatus().put(st.getT(), st);
 						}
+						slot.isresult=true;
+						slot.statuslist = new ArrayList<Status>(timeframe.getStatus().values());
+						((FeedBackSlot)slot.feedback).st=new ArrayList<Status>(timeframe.getStatus().values());
 					}
 				}
 
 			}
 
-			send_status--;
-			if(send_status<=0) {
-				if(timeframe.getStatus().size()>0) {
-					slot.isresult=true;
-					slot.statuslist = new ArrayList<Status>(timeframe.getStatus().values());
-					((FeedBackSlot)slot.feedback).st=new ArrayList<Status>(timeframe.getStatus().values());
-				}
-				send_status=9;
-			}
-
 			executeSlotEnd(timeframe, slot, (int) ((System.currentTimeMillis() - starttime)));
 
 			if(!slot.isresult) {
-				if(cnt_empty>2) {
-					slot.feedback=null;
-				} else {
+				if(cnt_empty<=2) {
+					slot.isresult=true;
 					cnt_empty++;
 				}
 			} else {
 				cnt_empty=0;
 			}
 
-			// adding slot to send to timeframe
-			timeframe.setResultslot(slot);
-			// adding to sending monitor
-			monitor.sendTimeFrame(timeframe);
-			storage.saveSlot(slot);
+			if(timeframe.getStatus().size()>0 && getCurrentpos() % 5 == 0) {
+
+				slot.isresult=true;
+				slot.statuslist = new ArrayList<Status>(timeframe.getStatus().values());
+				((FeedBackSlot)slot.feedback).st=new ArrayList<Status>(timeframe.getStatus().values());
+			}
+
+			if(slot.isresult) {
+
+				// adding slot to send to timeframe
+				timeframe.setResultslot(slot);
+				// adding to sending monitor
+				monitor.sendTimeFrame(timeframe);
+				storage.saveSlot(slot);
+
+			}
 
 		}
 

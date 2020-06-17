@@ -17,8 +17,8 @@ public class ResultSlot extends PersistObject {
 	public long pos;
 	public long time = System.currentTimeMillis();
 
-
 	public boolean isresult=false;
+
 	public FeedBack feedback;
 
 	public Map<String, ResponseTeam> teams = new HashMap<String, ResponseTeam>();

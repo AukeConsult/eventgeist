@@ -26,7 +26,6 @@ public class TimeFrame {
 	protected Map<String, UserSession> usersessions = new ConcurrentHashMap<String, UserSession>();
 	public List<UserSession> getUserSessions() {return new ArrayList<UserSession>(usersessions.values());}
 
-
 	public Queue<ResultSlot> history1 = new LinkedList<ResultSlot>();
 	public Queue<ResultSlot> history2 = new LinkedList<ResultSlot>();
 
@@ -82,11 +81,7 @@ public class TimeFrame {
 	public List<Response> readResponses() {
 		try {
 			lock.lock();
-			if(responses.size()>0) {
-				return new ArrayList<Response>(responses);
-			} else {
-				return null;
-			}
+			return new ArrayList<Response>(responses);
 		} finally {
 			responses.clear();
 			lock.unlock();
