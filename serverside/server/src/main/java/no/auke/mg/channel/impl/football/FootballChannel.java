@@ -54,10 +54,8 @@ public class FootballChannel extends ChannelService {
 
 		FootballFeedback total_hist = null;
 
-		double num_hist1 = 0;
 		for (ResultSlot hist_slot : new ArrayList<ResultSlot>(frame.history1)) {
 
-			num_hist1++;
 			if (hist_slot.feedback != null) {
 
 				FootballFeedback res_hist = (FootballFeedback) hist_slot.feedback;
@@ -90,10 +88,8 @@ public class FootballChannel extends ChannelService {
 			}
 		}
 
-		double num_hist2 = 0;
 		for (ResultSlot hist_slot : new ArrayList<ResultSlot>(frame.history2)) {
 
-			num_hist2++;
 			if (hist_slot.feedback != null) {
 
 				FootballFeedback res_hist = (FootballFeedback) hist_slot.feedback;
@@ -145,8 +141,8 @@ public class FootballChannel extends ChannelService {
 				Teamres hist_total = total_hist.teamwork.get(key_team);
 				Teamres current_res = current.teamwork.get(key_team);
 
-				current_res.totwork.avg1 = Math.round(hist_total.totwork.avg1 / num_hist1 * 10000.0) / 10000.0;
-				current_res.totwork.avg2 = Math.round(hist_total.totwork.avg2 / num_hist2 * 10000.0) / 10000.0;
+				current_res.totwork.avg1 = Math.round(hist_total.totwork.avg1 / getAvg1period() * 10000.0) / 10000.0;
+				current_res.totwork.avg2 = Math.round(hist_total.totwork.avg2 / getAvg2period() * 10000.0) / 10000.0;
 
 				if (current_res.totwork.avg1 > 0 || current_res.totwork.avg2 > 0) {
 					slot.isresult = true;
@@ -157,9 +153,9 @@ public class FootballChannel extends ChannelService {
 						current_res.btnwork.put(keybtn, new Measure(keybtn));
 					}
 					current_res.btnwork.get(keybtn).avg1 = Math
-							.round(hist_total.btnwork.get(keybtn).avg1 / num_hist1 * 10000.0) / 10000.0;
+							.round(hist_total.btnwork.get(keybtn).avg1 / getAvg1period() * 10000.0) / 10000.0;
 					current_res.btnwork.get(keybtn).avg2 = Math
-							.round(hist_total.btnwork.get(keybtn).avg2 / num_hist2 * 10000.0) / 10000.0;
+							.round(hist_total.btnwork.get(keybtn).avg2 / getAvg2period() * 10000.0) / 10000.0;
 					if (current_res.btnwork.get(keybtn).avg1 > 0 || current_res.btnwork.get(keybtn).avg2 > 0) {
 						slot.isresult = true;
 					}
@@ -194,8 +190,8 @@ public class FootballChannel extends ChannelService {
 					teamres.btnwork.put(btnkey, new Measure(btnkey));
 				}
 				ResponseHits h = slot.teams.get(team).hits.get(btnkey);
-				teamres.btnwork.get(btnkey).val = h.num;
-				teamres.num += h.num;
+				teamres.btnwork.get(btnkey).val = h.val;
+				teamres.totwork.val += h.val;
 			}
 		}
 		calc_average(frame,slot);

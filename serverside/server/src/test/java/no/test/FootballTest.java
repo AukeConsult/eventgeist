@@ -44,8 +44,8 @@ public class FootballTest {
 		storage.saveChannelInfo(info);
 
 		channel = new FootballChannel(info);
-		channel.init();
 		channel.stop();
+		channel.init();
 
 		for(int i=0;i<10;i++){
 			channel.addUser(new UserSession(String.valueOf(i), channel, "leifx" + i, "team1", "", 0));
@@ -183,7 +183,10 @@ public class FootballTest {
 		Assert.assertEquals(50.0,result.teamwork.get("team1").btnwork.get("btn1").val,0);
 		Assert.assertEquals(75.0,result.teamwork.get("team2").btnwork.get("btn1").val,0);
 
-		monitor.clear();
+		Assert.assertEquals(50.0,result.teamwork.get("team1").totwork.val,0);
+		Assert.assertEquals(75.0,result.teamwork.get("team2").totwork.val,0);
+
+		monitor.print();
 
 	}
 

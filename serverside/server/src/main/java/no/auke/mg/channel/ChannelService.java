@@ -54,9 +54,11 @@ public abstract class ChannelService  {
 
 	// services
 	private Monitor 		monitor;
+	public void 			setMonitor(Monitor monitor) {this.monitor = monitor;}
 	public Monitor 			getMonitor() {return monitor;}
 
 	private Storage 		storage;
+	public void 			setStorage(Storage storage) {this.storage = storage;}
 	public Storage 			getStorage() {return storage;}
 
 	protected String persistDir;
@@ -75,8 +77,8 @@ public abstract class ChannelService  {
 		this.avg2Period.set(channelinfo.getAvg2Time() / channelinfo.getSlotTime());
 
 		this.channelinfo = channelinfo;
-		this.monitor=Monitor.instance;
 
+		this.monitor=Monitor.instance;
 		//TODO: make a separate storage object for each channel
 		this.storage=Storage.instance;
 
@@ -114,6 +116,7 @@ public abstract class ChannelService  {
 	public void init() {
 
 		starttime=System.currentTimeMillis();
+
 		persist();
 		storage.doSave();
 
@@ -139,10 +142,10 @@ public abstract class ChannelService  {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				long start=System.currentTimeMillis();
+				System.out.println("start collect");
 				while (!stopthread.get()) {
 					try {
-						System.out.println("collect " + slotTime.get());
+						//System.out.println("collect");
 						collect();
 						Thread.sleep(slotTime.get() / 5);
 					} catch (Exception e) {
@@ -150,6 +153,7 @@ public abstract class ChannelService  {
 					}
 				}
 			}
+
 		}).start();
 
 		// Make hart beat and calculate incoming responses pr. timeslot
@@ -157,7 +161,7 @@ public abstract class ChannelService  {
 			@Override
 			public void run() {
 				// calculating results
-
+				System.out.println("start calculate");
 				long start=System.currentTimeMillis();
 				while (!stopthread.get()) {
 					try {
@@ -186,7 +190,6 @@ public abstract class ChannelService  {
 		if(!timeframes.containsKey(session.getDelay())) {
 			timeframes.put(session.getDelay(), new TimeFrame(this,session.getDelay()));
 		}
-
 		timeframes.get(session.getDelay()).addUser(session);
 
 	}
@@ -242,11 +245,9 @@ public abstract class ChannelService  {
 			}
 		}
 
-
 	}
 
 	private int cnt_empty=100;
-	private int send_status=0;
 	public void calculate() {
 
 		// hart pulse timer

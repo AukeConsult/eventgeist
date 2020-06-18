@@ -39,6 +39,9 @@ public class MassProdTest {
 		storage.saveChannelInfo(info);
 
 		channel = new FootballChannel(info);
+		channel.setMonitor(monitor);
+		channel.setStorage(storage);
+
 		channel.init();
 
 	}
@@ -64,10 +67,12 @@ public class MassProdTest {
 				try {
 					Thread.sleep(50 + rnd.nextInt(2000));
 					if(rnd.nextInt(3)==0) {
+						//System.out.println(usersession.getUserid() +  "send");
 						usersession.addResponse("C#b1");
 						cnt.incrementAndGet();
 					}
 					if(rnd.nextInt(10)==0) {
+						//System.out.println(usersession.getUserid() +  "send");
 						usersession.addResponse("C#b2");
 						cnt.incrementAndGet();
 					}
@@ -86,7 +91,7 @@ public class MassProdTest {
 		System.out.println("calculate random");
 		AtomicBoolean closed = new AtomicBoolean(false);
 
-		int num_usersessions=10000;
+		int num_usersessions=25000;
 
 		channel.getMonitor().init();
 
@@ -99,7 +104,6 @@ public class MassProdTest {
 		while(!closed.get()) {
 			try {
 				Thread.sleep(2000);
-				channel.persist();
 				int cnt=0;
 				for(userThread worker:workers) {
 					if(!worker.closed.get()) {
